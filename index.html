@@ -26,7 +26,6 @@
       --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
       --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
       --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
-      --space-12: 3rem; --space-16: 4rem;
       --color-bg: #f7f6f2; --color-surface: #f9f8f5; --color-surface-2: #fbfbf9;
       --color-surface-offset: #f3f0ec; --color-border: #d4d1ca; --color-divider: #dcd9d5;
       --color-text: #28251d; --color-text-muted: #66645f; --color-text-faint: #9d9b96;
@@ -37,7 +36,6 @@
       --shadow-sm: 0 1px 2px oklch(0.2 0.01 80 / 0.06); --shadow-md: 0 4px 12px oklch(0.2 0.01 80 / 0.08);
       --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
       --font-body: 'Satoshi', 'Inter', sans-serif;
-      --font-display: 'Satoshi', 'Inter', sans-serif;
     }
     [data-theme="dark"] {
       --color-bg: #171614; --color-surface: #1c1b19; --color-surface-2: #201f1d;
@@ -50,10 +48,7 @@
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
-    body {
-      min-height: 100dvh; line-height: 1.6; font-family: var(--font-body); font-size: var(--text-base);
-      color: var(--color-text); background: var(--color-bg); overflow: hidden;
-    }
+    body { min-height: 100dvh; line-height: 1.6; font-family: var(--font-body); font-size: var(--text-base); color: var(--color-text); background: var(--color-bg); overflow: hidden; }
     button, input, select { font: inherit; color: inherit; }
     button { cursor: pointer; border: none; background: none; }
     table { border-collapse: collapse; width: 100%; }
@@ -61,7 +56,7 @@
     :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-sm); }
     .dashboard { display: grid; grid-template-columns: 280px 1fr; grid-template-rows: auto 1fr; height: 100dvh; }
     .sidebar { grid-row: 1 / -1; background: var(--color-surface); border-right: 1px solid var(--color-border); padding: var(--space-6); overflow-y: auto; overscroll-behavior: contain; }
-    .header { grid-column: 2; position: sticky; top: 0; z-index: 10; background: color-mix(in oklab, var(--color-bg) 88%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--space-6); }
+    .header { grid-column: 2; position: sticky; top: 0; z-index: 10; background: color-mix(in oklab, var(--color-bg) 88%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--space-6); flex-wrap: wrap; }
     .main { grid-column: 2; overflow-y: auto; overscroll-behavior: contain; padding: var(--space-6); }
     .mobile-menu { display: none; }
     .logo { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-8); }
@@ -73,7 +68,17 @@
     .nav-list { list-style: none; display: grid; gap: var(--space-2); }
     .nav-button { width: 100%; text-align: left; padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); font-size: var(--text-sm); background: transparent; transition: background var(--transition-interactive), color var(--transition-interactive); }
     .nav-button.active, .nav-button:hover { background: color-mix(in oklab, var(--color-primary) 10%, var(--color-surface)); color: var(--color-primary); }
-    .theme-toggle, .mobile-menu { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-full); background: var(--color-surface); border: 1px solid var(--color-border); }
+    .theme-toggle, .mobile-menu { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--color-surface); border: 1px solid var(--color-border); }
+    .btn-icon { min-width: 36px; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-md); background: var(--color-surface); border: 1px solid var(--color-border); transition: background var(--transition-interactive); }
+    .btn-icon:hover { background: var(--color-surface-offset); }
+    .btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--color-surface-2); border: 1px solid var(--color-border); font-size: var(--text-xs); transition: background var(--transition-interactive); }
+    .btn-secondary:hover { background: var(--color-surface-offset); }
+    .btn-danger { color: var(--color-error); }
+    .header-tools { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+    .fx-group { display: flex; align-items: center; gap: var(--space-2); }
+    .fx-group label { font-size: var(--text-xs); white-space: nowrap; color: var(--color-text-muted); }
+    .fx-group input { width: 72px; min-height: 36px; border: 1px solid var(--color-border); background: var(--color-surface-2); border-radius: var(--radius-md); padding: 0 var(--space-2); font-size: var(--text-xs); }
+    .fx-group span { font-size: var(--text-xs); font-weight: 700; color: var(--color-primary); min-width: 28px; }
     .header-title h2 { font-size: var(--text-xl); line-height: 1.1; }
     .header-title p { font-size: var(--text-sm); color: var(--color-text-muted); }
     .content-section { display: none; }
@@ -93,7 +98,7 @@
     .stack-grid { display: grid; gap: var(--space-3); }
     .stack-row { display: grid; grid-template-columns: 1.2fr 0.9fr 0.9fr 0.9fr 0.9fr; gap: var(--space-3); align-items: center; padding: var(--space-3); border-radius: var(--radius-lg); background: var(--color-surface-2); font-size: var(--text-sm); }
     .stack-row.header-row { background: transparent; padding-inline: 0; color: var(--color-text-muted); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; }
-    .provider-pill { display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-1) var(--space-2); border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 700; }
+    .provider-pill { display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-1) var(--space-2); border-radius: 999px; font-size: var(--text-xs); font-weight: 700; }
     .aws { background: color-mix(in oklab, var(--color-orange) 15%, var(--color-surface)); color: var(--color-orange); }
     .gcp { background: color-mix(in oklab, var(--color-blue) 15%, var(--color-surface)); color: var(--color-blue); }
     .azure { background: color-mix(in oklab, var(--color-purple) 15%, var(--color-surface)); color: var(--color-purple); }
@@ -105,15 +110,22 @@
     .cost-table th, .cost-table td { text-align: left; padding: var(--space-3); border-bottom: 1px solid var(--color-divider); font-size: var(--text-sm); }
     .cost-table th { position: sticky; top: 0; background: var(--color-surface); z-index: 1; color: var(--color-text-muted); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; }
     .cost-table td.money, .cost-table td.num { font-variant-numeric: tabular-nums lining-nums; }
+    .cost-table tr.total-row td { font-weight: 700; border-top: 2px solid var(--color-border); }
     .chart-shell { min-height: 320px; position: relative; }
     .note { padding: var(--space-4); border-radius: var(--radius-lg); background: color-mix(in oklab, var(--color-primary) 7%, var(--color-surface)); color: var(--color-text); font-size: var(--text-sm); }
+    .note a { color: inherit; }
     .toolbar { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+    .scenario-item { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--color-surface-2); border: 1px solid var(--color-border); font-size: var(--text-xs); }
+    .scenario-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .toast { position: fixed; bottom: var(--space-6); right: var(--space-6); padding: var(--space-3) var(--space-5); background: var(--color-text); color: var(--color-text-inverse); border-radius: var(--radius-lg); font-size: var(--text-sm); z-index: 200; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+    .toast.show { opacity: 1; }
     @media (max-width: 1100px) { .kpi-grid, .card-grid-2, .inputs-grid { grid-template-columns: 1fr; } .stack-row { grid-template-columns: 1.2fr repeat(4, minmax(90px, 1fr)); } }
-    @media (max-width: 860px) { body { overflow: auto; } .dashboard { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; height: auto; min-height: 100dvh; } .sidebar { grid-row: auto; grid-column: 1; border-right: none; border-bottom: 1px solid var(--color-border); display: none; } .sidebar.open { display: block; } .header, .main { grid-column: 1; } .header { position: sticky; top: 0; } .main { overflow: visible; padding: var(--space-4); } .mobile-menu { display: inline-flex; } .header-title h2 { font-size: var(--text-lg); } .stack-row { min-width: 720px; } }
+    @media (max-width: 860px) { body { overflow: auto; } .dashboard { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; height: auto; min-height: 100dvh; } .sidebar { grid-row: auto; grid-column: 1; border-right: none; border-bottom: 1px solid var(--color-border); display: none; } .sidebar.open { display: block; } .header, .main { grid-column: 1; } .header { position: sticky; top: 0; } .main { overflow: visible; padding: var(--space-4); } .mobile-menu { display: inline-flex; } .header-title h2 { font-size: var(--text-lg); } .stack-row { min-width: 720px; } .fx-group label { display: none; } }
   </style>
 </head>
 <body>
   <a href="#main" style="position:absolute;left:-9999px;top:auto;">Pular para o conteúdo</a>
+  <div id="toast" class="toast" aria-live="polite"></div>
   <div class="dashboard">
     <aside class="sidebar" id="sidebar">
       <div class="logo">
@@ -134,6 +146,7 @@
           <ul class="nav-list">
             <li><button class="nav-button active" data-target="overview">Visão geral</button></li>
             <li><button class="nav-button" data-target="inputs">Entradas</button></li>
+            <li><button class="nav-button" data-target="commitment">Compromisso</button></li>
             <li><button class="nav-button" data-target="break-even">Ponto de equilíbrio</button></li>
             <li><button class="nav-button" data-target="assumptions">Premissas</button></li>
           </ul>
@@ -147,12 +160,24 @@
           <div><span class="provider-pill azure">Azure</span></div>
         </div>
       </div>
-      <div class="note">O painel usa tabelas de preços editáveis e premissas padrão para Kubernetes, SQL gerenciado, armazenamento de objetos, CDN e inferência de LLM. Use-o para modelar custos mensais de forma direcional e depois substitua os valores pelos preços negociados no seu contrato.</div>
-      <div class="note" style="margin-top: var(--space-4); font-size: var(--text-xs); color: var(--color-text-muted);">
+      <div class="nav-group">
+        <h2>Cenários</h2>
+        <div class="stack-grid" id="scenariosList"></div>
+        <button class="btn-secondary" id="saveScenarioBtn" style="width:100%;margin-top:var(--space-3)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Salvar cenário atual
+        </button>
+      </div>
+      <div class="note">O painel modela Kubernetes, SQL gerenciado, object storage, CDN, Load Balancer, egress e inferência de LLM. Use para estimativas direcionais e substitua pelos preços contratados.</div>
+      <div class="note" style="margin-top:var(--space-4);font-size:var(--text-xs);color:var(--color-text-muted)">
         <strong>Preços de referência:</strong> abril de 2025.<br>
-        Valores são estimativas direcionais. Não refletem preços contratados, descontos por volume ou variações regionais. Consulte as calculadoras oficiais dos provedores para orçamentos precisos.
+        Consulte as calculadoras oficiais:
+        <a href="https://calculator.aws/pricing/2/home" target="_blank" rel="noopener" style="color:var(--color-orange)">AWS</a> ·
+        <a href="https://cloud.google.com/products/calculator" target="_blank" rel="noopener" style="color:var(--color-blue)">GCP</a> ·
+        <a href="https://azure.microsoft.com/pricing/calculator/" target="_blank" rel="noopener" style="color:var(--color-purple)">Azure</a>
       </div>
     </aside>
+
     <header class="header">
       <div class="toolbar">
         <button class="mobile-menu" id="mobileMenu" aria-label="Alternar navegação">☰</button>
@@ -161,22 +186,38 @@
           <p>Stack padrão entre AWS, Google Cloud e Azure</p>
         </div>
       </div>
-      <button class="theme-toggle" data-theme-toggle aria-label="Alternar tema">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-      </button>
-    </header>
-    <main class="main" id="main">
-      <div role="note" style="display:flex;align-items:flex-start;gap:var(--space-3);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);border-radius:var(--radius-lg);background:color-mix(in oklab,var(--color-gold) 10%,var(--color-surface));border:1px solid color-mix(in oklab,var(--color-gold) 25%,transparent);font-size:var(--text-xs);color:var(--color-text-muted);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;color:var(--color-gold)"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-        <span><strong style="color:var(--color-text)">Estimativas direcionais.</strong> Os valores refletem preços de tabela de abril de 2025. Não incluem descontos por volume, preços negociados ou variações regionais. Use como ponto de partida e consulte as calculadoras oficiais dos provedores para orçamentos precisos.</span>
+      <div class="header-tools">
+        <div class="fx-group">
+          <label for="fxRate">1 USD =</label>
+          <input id="fxRate" type="number" step="0.01" min="0.01" value="1" aria-label="Taxa de câmbio">
+          <span id="fxLabel">USD</span>
+        </div>
+        <button class="btn-icon" id="shareBtn" title="Copiar link de compartilhamento" aria-label="Compartilhar cenário">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </button>
+        <button class="btn-icon" id="exportCsvBtn" title="Exportar CSV" aria-label="Exportar CSV">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button class="theme-toggle" data-theme-toggle aria-label="Alternar tema">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
       </div>
+    </header>
+
+    <main class="main" id="main">
+      <div role="note" style="display:flex;align-items:flex-start;gap:var(--space-3);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);border-radius:var(--radius-lg);background:color-mix(in oklab,var(--color-gold) 10%,var(--color-surface));border:1px solid color-mix(in oklab,var(--color-gold) 25%,transparent);font-size:var(--text-xs);color:var(--color-text-muted)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;color:var(--color-gold)"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <span><strong style="color:var(--color-text)">Estimativas direcionais.</strong> Preços de tabela de abril de 2025. Não incluem descontos por volume, preços negociados ou variações regionais. Use como ponto de partida.</span>
+      </div>
+
+      <!-- ── Visão geral ── -->
       <section class="content-section active" id="overview">
         <div class="section-grid">
           <div class="kpi-grid">
-            <article class="card"><div class="kpi-label">Menor total mensal</div><div class="kpi-value" id="kpiLowest">US$ 0</div><p class="meta" id="kpiLowestLabel">Provedor</p></article>
-            <article class="card"><div class="kpi-label">Maior total mensal</div><div class="kpi-value" id="kpiHighest">US$ 0</div><p class="meta" id="kpiHighestLabel">Provedor</p></article>
-            <article class="card"><div class="kpi-label">Diferença</div><div class="kpi-value" id="kpiSpread">US$ 0</div><p class="meta">Diferença entre o menor e o maior</p></article>
-            <article class="card"><div class="kpi-label">Peso da inferência</div><div class="kpi-value" id="kpiInferenceShare">0%</div><p class="meta">Maior peso de IA dentro do total em nuvem</p></article>
+            <article class="card"><div class="kpi-label">Menor total mensal</div><div class="kpi-value" id="kpiLowest">–</div><p class="meta" id="kpiLowestLabel">Provedor</p></article>
+            <article class="card"><div class="kpi-label">Maior total mensal</div><div class="kpi-value" id="kpiHighest">–</div><p class="meta" id="kpiHighestLabel">Provedor</p></article>
+            <article class="card"><div class="kpi-label">Diferença</div><div class="kpi-value" id="kpiSpread">–</div><p class="meta">Entre o menor e o maior</p></article>
+            <article class="card"><div class="kpi-label">Peso da inferência</div><div class="kpi-value" id="kpiInferenceShare">–</div><p class="meta">Maior proporção de IA no total</p></article>
           </div>
           <div class="card-grid-2">
             <article class="card"><h3>Totais por provedor</h3><p class="meta">Total do stack para a carga mensal editável.</p><div class="chart-shell"><canvas id="totalChart"></canvas></div></article>
@@ -192,65 +233,173 @@
           </article>
         </div>
       </section>
+
+      <!-- ── Entradas ── -->
       <section class="content-section" id="inputs">
         <div class="section-grid">
           <article class="card"><h3>Entradas da carga</h3><p class="meta">Ajuste as premissas de uso do stack padrão.</p><div class="inputs-grid" id="workloadInputs"></div></article>
-          <article class="card"><h3>Tabela de preços por provedor</h3><p class="meta">As tabelas de preços padrão são estimativas direcionais. Substitua pelos valores dos calculadores ou pelos preços contratados.</p><div class="stack-grid" id="rateCardTables"></div></article>
+          <article class="card"><h3>Tabela de preços por provedor</h3><p class="meta">Estimativas direcionais. Substitua pelos preços dos calculadores oficiais ou contratos negociados.</p><div class="stack-grid" id="rateCardTables"></div></article>
         </div>
       </section>
+
+      <!-- ── Compromisso ── -->
+      <section class="content-section" id="commitment">
+        <div class="section-grid">
+          <article class="card">
+            <h3>Descontos de compromisso</h3>
+            <p class="meta">Percentual de desconto sobre o preço on-demand. Médias de mercado — substitua pelos descontos reais do seu contrato.</p>
+            <div class="inputs-grid" id="reservedDiscountInputs"></div>
+          </article>
+          <article class="card table-wrap">
+            <h3>On-demand vs Reservado / Savings Plans</h3>
+            <p class="meta">Economia estimada ao comprometer-se por 1 ou 3 anos.</p>
+            <table class="cost-table" aria-label="Comparativo on-demand vs reservado">
+              <thead><tr><th>Provedor</th><th>On-demand / mês</th><th>Reservado 1 ano / mês</th><th>Economia anual</th><th>Reservado 3 anos / mês</th><th>Economia em 3 anos</th></tr></thead>
+              <tbody id="reservedBody"></tbody>
+            </table>
+          </article>
+          <div class="card-grid-2">
+            <article class="card"><h3>Total anual — 1 ano</h3><p class="meta">On-demand vs comprometido por 1 ano.</p><div class="chart-shell"><canvas id="reserved1yrChart"></canvas></div></article>
+            <article class="card"><h3>Total em 3 anos</h3><p class="meta">On-demand vs comprometido por 3 anos.</p><div class="chart-shell"><canvas id="reserved3yrChart"></canvas></div></article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Ponto de equilíbrio ── -->
       <section class="content-section" id="break-even">
         <div class="section-grid">
           <div class="card-grid-2">
             <article class="card"><h3>Economia de GPU</h3><p class="meta">Compare o custo mensal de GPU self-hosted com APIs de inferência gerenciadas.</p><div class="inputs-grid" id="gpuInputs"></div></article>
-            <article class="card"><h3>Requisições de equilíbrio</h3><p class="meta">Quantidade mensal de requisições para o self-hosted empatar com cada provedor gerenciado.</p><div class="chart-shell"><canvas id="breakevenChart"></canvas></div></article>
+            <article class="card"><h3>Requisições de equilíbrio</h3><p class="meta">Volume mensal de requisições para self-hosted empatar com cada provedor gerenciado.</p><div class="chart-shell"><canvas id="breakevenChart"></canvas></div></article>
           </div>
           <article class="card table-wrap">
             <h3>Tabela econômica de inferência</h3>
             <p class="meta">Assume média de tokens por requisição e preço médio de inferência gerenciada.</p>
             <table class="cost-table" aria-label="Tabela comparativa de ponto de equilíbrio">
-              <thead><tr><th>Opção de inferência</th><th>Fixo mensal / base</th><th>Variável por requisição</th><th>Requisições mensais de equilíbrio</th><th>Custo mensal na carga atual</th></tr></thead>
+              <thead><tr><th>Opção de inferência</th><th>Fixo mensal / base</th><th>Variável por requisição</th><th>Requisições de equilíbrio / mês</th><th>Custo mensal na carga atual</th></tr></thead>
               <tbody id="breakevenBody"></tbody>
             </table>
           </article>
         </div>
       </section>
+
+      <!-- ── Premissas ── -->
       <section class="content-section" id="assumptions">
         <div class="section-grid">
-          <article class="card"><h3>Notas do modelo</h3><p class="meta">Como o painel calcula os totais.</p><div class="stack-grid"><div class="note">Kubernetes é modelado como plano de controle mais horas de nó multiplicadas pela quantidade de workers. SQL gerenciado inclui computação, armazenamento, backup e uma pequena folga de IOPS.</div><div class="note">Armazenamento de objetos inclui GB armazenado e franquia de recuperação/API. CDN é modelada principalmente por GB de saída e volume de requisições. A inferência gerenciada é baseada em volume de tokens com taxas separadas para entrada e saída.</div><div class="note">O custo de GPU self-hosted inclui amortização mensal, energia, colocation ou rack e overhead de plataforma. Use isso para análise de ponto de equilíbrio, não como contabilidade completa de infraestrutura.</div></div></article>
-          <article class="card"><h3>Referência de fórmulas</h3><p class="meta">Cálculos principais usados no painel.</p><div class="stack-grid"><div class="stack-row header-row"><div>Métrica</div><div>Fórmula</div><div>Exemplo</div><div>Unidades</div><div>Observações</div></div><div class="stack-row"><div>Kubernetes</div><div>plano de controle + horas de nó × workers</div><div>74 + 0,12 × 730 × 3</div><div>USD/mês</div><div>Inclui taxa do cluster</div></div><div class="stack-row"><div>SQL gerenciado</div><div>base + vCPU × horas + armazenamento × GB</div><div>55 + 0,18 × 730 × 2 + 0,12 × 200</div><div>USD/mês</div><div>Padrão de serviço gerenciado</div></div><div class="stack-row"><div>CDN</div><div>GB de saída × tarifa + requisições ÷ 10 mil × tarifa por requisição</div><div>3000 × 0,08 + 20m ÷ 10 mil × 0,0075</div><div>USD/mês</div><div>Cobrança em duas partes</div></div><div class="stack-row"><div>Inferência de LLM</div><div>Mtok de entrada × tarifa + Mtok de saída × tarifa</div><div>250 × 0,8 + 60 × 3,2</div><div>USD/mês</div><div>Preço separado por token</div></div><div class="stack-row"><div>Equilíbrio de GPU</div><div>custo self-hosted ÷ custo variável gerenciado</div><div>4200 ÷ 0,022</div><div>req/mês</div><div>Limite aproximado</div></div></div></article>
+          <article class="card"><h3>Notas do modelo</h3><p class="meta">Como o painel calcula os totais.</p>
+            <div class="stack-grid">
+              <div class="note">Kubernetes: plano de controle + horas de nó × workers. SQL gerenciado: computação, armazenamento e backup.</div>
+              <div class="note">Object storage: GB armazenado + recuperação/API. CDN: GB de saída + volume de requisições.</div>
+              <div class="note">Load Balancer: horas ativas (modelo simplificado, sem LCU/RCU). Egress: saída inter-região em GB.</div>
+              <div class="note">LLM gerenciado: volume de tokens com tarifas separadas de entrada e saída.</div>
+              <div class="note">GPU self-hosted: amortização + energia + rack + overhead de plataforma. Use para análise de break-even.</div>
+              <div class="note">Descontos de compromisso são médias de mercado. Variam por tipo de instância e região — substitua pelos valores do seu contrato.</div>
+            </div>
+          </article>
+          <article class="card"><h3>Referência de fórmulas</h3><p class="meta">Cálculos principais usados no painel.</p>
+            <div class="stack-grid">
+              <div class="stack-row header-row"><div>Métrica</div><div>Fórmula</div><div>Exemplo</div><div>Unidades</div><div>Obs.</div></div>
+              <div class="stack-row"><div>Kubernetes</div><div>plano + nó × h × workers</div><div>74 + 0,12 × 730 × 3</div><div>USD/mês</div><div>Com taxa do cluster</div></div>
+              <div class="stack-row"><div>SQL gerenciado</div><div>base + vCPU × h + GB × tarifa</div><div>55 + 0,18 × 730 × 2 + 0,12 × 200</div><div>USD/mês</div><div>–</div></div>
+              <div class="stack-row"><div>CDN</div><div>GB × tarifa + req ÷ 10k × tarifa</div><div>3000 × 0,08 + 2000 × 0,0075</div><div>USD/mês</div><div>Cobrança dupla</div></div>
+              <div class="stack-row"><div>Load Balancer</div><div>horas × tarifa</div><div>730 × 0,008</div><div>USD/mês</div><div>Sem LCU</div></div>
+              <div class="stack-row"><div>Egress</div><div>GB × tarifa</div><div>500 × 0,09</div><div>USD/mês</div><div>Inter-região</div></div>
+              <div class="stack-row"><div>LLM</div><div>Mtok-in × t-in + Mtok-out × t-out</div><div>250 × 0,8 + 60 × 3,2</div><div>USD/mês</div><div>–</div></div>
+              <div class="stack-row"><div>Reservado</div><div>total × (1 − desconto)</div><div>8500 × (1 − 0,37)</div><div>USD/mês</div><div>Média de mercado</div></div>
+              <div class="stack-row"><div>Break-even GPU</div><div>fixo ÷ custo-variável</div><div>4200 ÷ 0,022</div><div>req/mês</div><div>–</div></div>
+            </div>
+          </article>
         </div>
       </section>
     </main>
   </div>
+
   <script>
-    const state = {
-      workload: { k8sWorkers: 3, clusterHours: 730, sqlVcpu: 2, sqlStorageGb: 200, objectStorageGb: 5000, objectRetrievalGb: 600, cdnEgressGb: 3000, cdnRequests10k: 2000, llmRequests: 400000, avgInputTokens: 625, avgOutputTokens: 150 },
-      rates: {
-        aws: { kubernetesControlPlane: 74, kubernetesNodeHour: 0.122, sqlBase: 55, sqlVcpuHour: 0.18, sqlStorageGb: 0.12, objectStorageGb: 0.023, objectRetrievalGb: 0.01, cdnEgressGb: 0.085, cdnRequest10k: 0.0075, llmInputPerM: 0.8, llmOutputPerM: 3.2 },
-        gcp: { kubernetesControlPlane: 74, kubernetesNodeHour: 0.114, sqlBase: 52, sqlVcpuHour: 0.17, sqlStorageGb: 0.11, objectStorageGb: 0.02, objectRetrievalGb: 0.012, cdnEgressGb: 0.08, cdnRequest10k: 0.008, llmInputPerM: 0.75, llmOutputPerM: 3.0 },
-        azure: { kubernetesControlPlane: 73, kubernetesNodeHour: 0.126, sqlBase: 58, sqlVcpuHour: 0.185, sqlStorageGb: 0.125, objectStorageGb: 0.021, objectRetrievalGb: 0.011, cdnEgressGb: 0.087, cdnRequest10k: 0.009, llmInputPerM: 0.85, llmOutputPerM: 3.4 }
+    // ── Defaults & State ──────────────────────────────────────────────────────
+    const DEFAULTS = {
+      workload: {
+        k8sWorkers: 3, clusterHours: 730,
+        sqlVcpu: 2, sqlStorageGb: 200,
+        objectStorageGb: 5000, objectRetrievalGb: 600,
+        cdnEgressGb: 3000, cdnRequests10k: 2000,
+        lbHours: 730, egressGb: 500,
+        llmRequests: 400000, avgInputTokens: 625, avgOutputTokens: 150
       },
-      gpu: { serverMonthly: 2600, powerCoolingMonthly: 450, rackOpsMonthly: 650, platformMonthly: 500, requestsPerHourCapacity: 1400, targetUtilization: 0.7 }
+      rates: {
+        aws:   { kubernetesControlPlane: 74, kubernetesNodeHour: 0.122, sqlBase: 55, sqlVcpuHour: 0.18, sqlStorageGb: 0.12, objectStorageGb: 0.023, objectRetrievalGb: 0.01, cdnEgressGb: 0.085, cdnRequest10k: 0.0075, lbHourly: 0.008, egressGb: 0.09, llmInputPerM: 0.8, llmOutputPerM: 3.2 },
+        gcp:   { kubernetesControlPlane: 74, kubernetesNodeHour: 0.114, sqlBase: 52, sqlVcpuHour: 0.17, sqlStorageGb: 0.11, objectStorageGb: 0.02, objectRetrievalGb: 0.012, cdnEgressGb: 0.08, cdnRequest10k: 0.008, lbHourly: 0.008, egressGb: 0.09, llmInputPerM: 0.75, llmOutputPerM: 3.0 },
+        azure: { kubernetesControlPlane: 73, kubernetesNodeHour: 0.126, sqlBase: 58, sqlVcpuHour: 0.185, sqlStorageGb: 0.125, objectStorageGb: 0.021, objectRetrievalGb: 0.011, cdnEgressGb: 0.087, cdnRequest10k: 0.009, lbHourly: 0.007, egressGb: 0.087, llmInputPerM: 0.85, llmOutputPerM: 3.4 }
+      },
+      gpu: { serverMonthly: 2600, powerCoolingMonthly: 450, rackOpsMonthly: 650, platformMonthly: 500, requestsPerHourCapacity: 1400, targetUtilization: 0.7 },
+      reserved: {
+        discount1yr: { aws: 0.37, gcp: 0.37, azure: 0.35 },
+        discount3yr: { aws: 0.55, gcp: 0.57, azure: 0.50 }
+      },
+      fx: 1
     };
-    const providerMeta = { aws: { label: 'AWS', color: '#da7101' }, gcp: { label: 'Google Cloud', color: '#006494' }, azure: { label: 'Azure', color: '#7a39bb' }, self: { label: 'GPU self-hosted', color: '#437a22' }, bedrock: { label: 'Amazon Bedrock', color: '#da7101' }, vertex: { label: 'Vertex AI', color: '#006494' }, aoai: { label: 'Azure OpenAI', color: '#7a39bb' } };
-    const fieldDefs = [['k8sWorkers','Nós worker de Kubernetes',1],['clusterHours','Horas do cluster por mês',1],['sqlVcpu','vCPU de SQL gerenciado',1],['sqlStorageGb','Armazenamento de SQL gerenciado (GB)',1],['objectStorageGb','Armazenamento de objetos (GB)',1],['objectRetrievalGb','Recuperação de objetos (GB)',1],['cdnEgressGb','Saída de CDN (GB)',1],['cdnRequests10k','Requisições de CDN (x10 mil)',1],['llmRequests','Requisições de LLM por mês',1],['avgInputTokens','Média de tokens de entrada por requisição',1],['avgOutputTokens','Média de tokens de saída por requisição',1]];
-    const gpuDefs = [['serverMonthly','Amortização / locação do servidor GPU',1],['powerCoolingMonthly','Energia e refrigeração',1],['rackOpsMonthly','Rack / colocation / operação',1],['platformMonthly','Overhead de plataforma e SRE',1],['requestsPerHourCapacity','Requisições sustentadas por hora',1],['targetUtilization','Utilização alvo (0-1)',0.01]];
-    let totalChart, mixChart, breakevenChart;
-    const currency = v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
-    const currencyPrecise = v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'USD', minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(v);
+    const state = JSON.parse(JSON.stringify(DEFAULTS));
+
+    // ── Provider metadata ─────────────────────────────────────────────────────
+    const providerMeta = {
+      aws:     { label: 'AWS',           color: '#da7101' },
+      gcp:     { label: 'Google Cloud',  color: '#006494' },
+      azure:   { label: 'Azure',         color: '#7a39bb' },
+      self:    { label: 'GPU self-hosted', color: '#437a22' },
+      bedrock: { label: 'Amazon Bedrock', color: '#da7101' },
+      vertex:  { label: 'Vertex AI',     color: '#006494' },
+      aoai:    { label: 'Azure OpenAI',  color: '#7a39bb' }
+    };
+
+    // ── Field definitions ─────────────────────────────────────────────────────
+    const fieldDefs = [
+      ['k8sWorkers',       'Nós worker de Kubernetes', 1],
+      ['clusterHours',     'Horas do cluster por mês', 1],
+      ['sqlVcpu',          'vCPU de SQL gerenciado', 1],
+      ['sqlStorageGb',     'Armazenamento de SQL gerenciado (GB)', 1],
+      ['objectStorageGb',  'Armazenamento de objetos (GB)', 1],
+      ['objectRetrievalGb','Recuperação de objetos (GB)', 1],
+      ['cdnEgressGb',      'Saída de CDN (GB)', 1],
+      ['cdnRequests10k',   'Requisições de CDN (×10 mil)', 1],
+      ['lbHours',          'Horas de Load Balancer por mês', 1],
+      ['egressGb',         'Egress inter-região (GB)', 1],
+      ['llmRequests',      'Requisições de LLM por mês', 1],
+      ['avgInputTokens',   'Média de tokens de entrada por requisição', 1],
+      ['avgOutputTokens',  'Média de tokens de saída por requisição', 1]
+    ];
+    const gpuDefs = [
+      ['serverMonthly',          'Amortização / locação do servidor GPU', 1],
+      ['powerCoolingMonthly',    'Energia e refrigeração', 1],
+      ['rackOpsMonthly',         'Rack / colocation / operação', 1],
+      ['platformMonthly',        'Overhead de plataforma e SRE', 1],
+      ['requestsPerHourCapacity','Requisições sustentadas por hora', 1],
+      ['targetUtilization',      'Utilização alvo (0–1)', 0.01]
+    ];
+
+    let totalChart, mixChart, breakevenChart, reserved1yrChart, reserved3yrChart;
+
+    // ── Formatters ────────────────────────────────────────────────────────────
+    function fxRate() { return state.fx > 0 ? state.fx : 1; }
+    function fxSymbol() { return Math.abs(fxRate() - 1) < 0.02 ? 'USD' : 'BRL'; }
+    function fxCurrencyCode() { return Math.abs(fxRate() - 1) < 0.02 ? 'USD' : 'BRL'; }
+    const currency = v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: fxCurrencyCode(), maximumFractionDigits: 0 }).format(v * fxRate());
+    const currencyPrecise = v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: fxCurrencyCode(), minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(v * fxRate());
     const number = v => new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 }).format(v);
     const percent = v => `${(v * 100).toFixed(1).replace('.', ',')}%`;
+
+    // ── Calculations ──────────────────────────────────────────────────────────
     function calcProvider(provider) {
       const w = state.workload, r = state.rates[provider];
-      const inputMTok = (w.llmRequests * w.avgInputTokens) / 1000000;
-      const outputMTok = (w.llmRequests * w.avgOutputTokens) / 1000000;
-      const kubernetes = r.kubernetesControlPlane + (r.kubernetesNodeHour * w.clusterHours * w.k8sWorkers);
-      const sql = r.sqlBase + (r.sqlVcpuHour * w.clusterHours * w.sqlVcpu) + (r.sqlStorageGb * w.sqlStorageGb);
+      const inputMTok  = (w.llmRequests * w.avgInputTokens)  / 1_000_000;
+      const outputMTok = (w.llmRequests * w.avgOutputTokens) / 1_000_000;
+      const kubernetes    = r.kubernetesControlPlane + (r.kubernetesNodeHour * w.clusterHours * w.k8sWorkers);
+      const sql           = r.sqlBase + (r.sqlVcpuHour * w.clusterHours * w.sqlVcpu) + (r.sqlStorageGb * w.sqlStorageGb);
       const objectStorage = (r.objectStorageGb * w.objectStorageGb) + (r.objectRetrievalGb * w.objectRetrievalGb);
-      const cdn = (r.cdnEgressGb * w.cdnEgressGb) + (r.cdnRequest10k * w.cdnRequests10k);
-      const llm = (r.llmInputPerM * inputMTok) + (r.llmOutputPerM * outputMTok);
-      const total = kubernetes + sql + objectStorage + cdn + llm;
-      return { kubernetes, sql, objectStorage, cdn, llm, total };
+      const cdn           = (r.cdnEgressGb * w.cdnEgressGb) + (r.cdnRequest10k * w.cdnRequests10k);
+      const loadBalancer  = r.lbHourly * w.lbHours;
+      const egress        = r.egressGb * w.egressGb;
+      const llm           = (r.llmInputPerM * inputMTok) + (r.llmOutputPerM * outputMTok);
+      const total         = kubernetes + sql + objectStorage + cdn + loadBalancer + egress + llm;
+      return { kubernetes, sql, objectStorage, cdn, loadBalancer, egress, llm, total };
     }
     function calcSelfHosted() {
       const g = state.gpu;
@@ -260,75 +409,454 @@
       return { fixedMonthly, practicalMonthlyCapacity, variablePerRequest, currentLoadCost: fixedMonthly };
     }
     function calcBreakeven() {
-      const aws = calcProvider('aws'), gcp = calcProvider('gcp'), azure = calcProvider('azure'), self = calcSelfHosted();
-      const managed = { bedrock: aws.llm / state.workload.llmRequests, vertex: gcp.llm / state.workload.llmRequests, aoai: azure.llm / state.workload.llmRequests };
-      return Object.entries(managed).map(([key, perRequest]) => ({ key, variablePerRequest: perRequest, breakEvenRequests: perRequest > 0 ? self.fixedMonthly / perRequest : 0, currentMonthlyCost: perRequest * state.workload.llmRequests }));
-    }
-    function renderInputs() {
-      document.getElementById('workloadInputs').innerHTML = fieldDefs.map(([key,label,step]) => `<div class="field"><label for="${key}">${label}</label><input id="${key}" type="number" step="${step}" value="${state.workload[key]}" data-scope="workload" data-key="${key}" /></div>`).join('');
-      document.getElementById('gpuInputs').innerHTML = gpuDefs.map(([key,label,step]) => `<div class="field"><label for="gpu-${key}">${label}</label><input id="gpu-${key}" type="number" step="${step}" value="${state.gpu[key]}" data-scope="gpu" data-key="${key}" /></div>`).join('');
-      document.getElementById('rateCardTables').innerHTML = ['aws','gcp','azure'].map(provider => `<article class="card"><h3><span class="provider-pill ${provider === 'aws' ? 'aws' : provider === 'gcp' ? 'gcp' : 'azure'}">${providerMeta[provider].label}</span></h3><div class="inputs-grid">${Object.entries(state.rates[provider]).map(([key,value]) => `<div class="field"><label for="${provider}-${key}">${key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}</label><input id="${provider}-${key}" type="number" step="0.001" value="${value}" data-scope="rate" data-provider="${provider}" data-key="${key}" /></div>`).join('')}</div></article>`).join('');
-    }
-    function chartOptions() {
-      const styles = getComputedStyle(document.documentElement);
-      return { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: styles.getPropertyValue('--color-text').trim(), font: { family: 'Satoshi' } } } }, scales: { x: { ticks: { color: styles.getPropertyValue('--color-text-muted').trim() }, grid: { color: styles.getPropertyValue('--color-divider').trim() } }, y: { ticks: { color: styles.getPropertyValue('--color-text-muted').trim() }, grid: { color: styles.getPropertyValue('--color-divider').trim() } } } };
-    }
-    function renderOverview() {
       const aws = calcProvider('aws'), gcp = calcProvider('gcp'), azure = calcProvider('azure');
-      const providers = [{ key:'aws', label:'AWS', ...aws }, { key:'gcp', label:'Google Cloud', ...gcp }, { key:'azure', label:'Azure', ...azure }];
-      const sorted = [...providers].sort((a,b) => a.total - b.total), lowest = sorted[0], highest = sorted[2], maxInference = Math.max(...providers.map(p => p.llm / p.total));
-      document.getElementById('kpiLowest').textContent = currency(lowest.total);
-      document.getElementById('kpiLowestLabel').textContent = lowest.label;
-      document.getElementById('kpiHighest').textContent = currency(highest.total);
-      document.getElementById('kpiHighestLabel').textContent = highest.label;
-      document.getElementById('kpiSpread').textContent = currency(highest.total - lowest.total);
-      document.getElementById('kpiInferenceShare').textContent = percent(maxInference);
-      document.getElementById('breakdownBody').innerHTML = [['Kubernetes','kubernetes'],['SQL gerenciado','sql'],['Armazenamento de objetos','objectStorage'],['CDN','cdn'],['Inferência de LLM','llm'],['Total','total']].map(([label,key]) => `<tr><td>${label}</td><td class="money">${currency(aws[key])}</td><td class="money">${currency(gcp[key])}</td><td class="money">${currency(azure[key])}</td></tr>`).join('');
-      totalChart?.destroy();
-      totalChart = new Chart(document.getElementById('totalChart'), { type:'bar', data:{ labels: providers.map(p => p.label), datasets:[{ label:'Total mensal', data: providers.map(p => Math.round(p.total)), backgroundColor: providers.map(p => providerMeta[p.key].color), borderRadius:10 }] }, options: chartOptions() });
-      mixChart?.destroy();
-      mixChart = new Chart(document.getElementById('mixChart'), { type:'bar', data:{ labels: providers.map(p => p.label), datasets:[{ label:'Kubernetes', data: providers.map(p => p.kubernetes), backgroundColor:'#01696f' },{ label:'SQL gerenciado', data: providers.map(p => p.sql), backgroundColor:'#006494' },{ label:'Armazenamento de objetos', data: providers.map(p => p.objectStorage), backgroundColor:'#d19900' },{ label:'CDN', data: providers.map(p => p.cdn), backgroundColor:'#a12c7b' },{ label:'Inferência de LLM', data: providers.map(p => p.llm), backgroundColor:'#da7101' }] }, options: chartOptions() });
+      const self = calcSelfHosted();
+      const managed = {
+        bedrock: aws.llm  / state.workload.llmRequests,
+        vertex:  gcp.llm  / state.workload.llmRequests,
+        aoai:    azure.llm / state.workload.llmRequests
+      };
+      return Object.entries(managed).map(([key, perRequest]) => ({
+        key, variablePerRequest: perRequest,
+        breakEvenRequests: perRequest > 0 ? self.fixedMonthly / perRequest : 0,
+        currentMonthlyCost: perRequest * state.workload.llmRequests
+      }));
     }
-    function renderBreakEven() {
-      const self = calcSelfHosted(), rows = calcBreakeven();
-      document.getElementById('breakevenBody').innerHTML = `<tr><td><span class="provider-pill selfhost">GPU self-hosted</span></td><td class="money">${currency(self.fixedMonthly)}</td><td class="money">${currencyPrecise(self.variablePerRequest)}</td><td class="num">Capacidade ${number(self.practicalMonthlyCapacity)}</td><td class="money">${currency(self.currentLoadCost)}</td></tr>` + rows.map(row => `<tr><td><span class="provider-pill ${row.key === 'bedrock' ? 'bedrock' : row.key === 'vertex' ? 'vertex' : 'aoai'}">${row.key === 'bedrock' ? 'Amazon Bedrock' : row.key === 'vertex' ? 'Vertex AI' : 'Azure OpenAI'}</span></td><td class="money">${currency(row.currentMonthlyCost)}</td><td class="money">${currencyPrecise(row.variablePerRequest)}</td><td class="num">${number(row.breakEvenRequests)}</td><td class="money">${currency(row.currentMonthlyCost)}</td></tr>`).join('');
-      breakevenChart?.destroy();
-      breakevenChart = new Chart(document.getElementById('breakevenChart'), { type:'bar', data:{ labels:['Amazon Bedrock','Vertex AI','Azure OpenAI'], datasets:[{ label:'Requisições mensais de equilíbrio', data: rows.map(r => Math.round(r.breakEvenRequests)), backgroundColor:['#da7101','#006494','#7a39bb'], borderRadius:10 },{ label:'Capacidade mensal self-hosted', data: rows.map(() => Math.round(self.practicalMonthlyCapacity)), type:'line', borderColor:'#437a22', backgroundColor:'#437a22', tension:0.35 }] }, options: chartOptions() });
-    }
-    const STORAGE_KEY = 'esk-cloudcalc-v1';
+
+    // ── Persistence (localStorage) ────────────────────────────────────────────
+    const STORAGE_KEY   = 'esk-cloudcalc-v1';
+    const SCENARIOS_KEY = 'esk-cloudcalc-scenarios';
+
     function saveState() {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ workload: state.workload, rates: state.rates, gpu: state.gpu })); } catch(_) {}
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          workload: state.workload, rates: state.rates, gpu: state.gpu,
+          reserved: state.reserved, fx: state.fx
+        }));
+      } catch(_) {}
     }
     function loadState() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (!saved) return;
-        const parsed = JSON.parse(saved);
-        if (parsed.workload) Object.assign(state.workload, parsed.workload);
-        if (parsed.rates) { ['aws','gcp','azure'].forEach(p => { if (parsed.rates[p]) Object.assign(state.rates[p], parsed.rates[p]); }); }
-        if (parsed.gpu) Object.assign(state.gpu, parsed.gpu);
+        const p = JSON.parse(saved);
+        if (p.workload) Object.assign(state.workload, p.workload);
+        if (p.rates)    ['aws','gcp','azure'].forEach(k => { if (p.rates[k]) Object.assign(state.rates[k], p.rates[k]); });
+        if (p.gpu)      Object.assign(state.gpu, p.gpu);
+        if (p.reserved) {
+          if (p.reserved.discount1yr) Object.assign(state.reserved.discount1yr, p.reserved.discount1yr);
+          if (p.reserved.discount3yr) Object.assign(state.reserved.discount3yr, p.reserved.discount3yr);
+        }
+        if (p.fx != null) state.fx = p.fx;
       } catch(_) {}
     }
-    function refresh() { renderOverview(); renderBreakEven(); }
+
+    // ── URL Sharing ───────────────────────────────────────────────────────────
+    function encodeStateToURL() {
+      try {
+        const snapshot = { workload: state.workload, rates: state.rates, gpu: state.gpu, reserved: state.reserved, fx: state.fx };
+        const encoded  = btoa(unescape(encodeURIComponent(JSON.stringify(snapshot))));
+        const url = new URL(location.href);
+        url.searchParams.set('s', encoded);
+        return url.toString();
+      } catch(_) { return location.href; }
+    }
+    function loadStateFromURL() {
+      try {
+        const encoded = new URLSearchParams(location.search).get('s');
+        if (!encoded) return false;
+        const p = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+        if (p.workload) Object.assign(state.workload, p.workload);
+        if (p.rates)    ['aws','gcp','azure'].forEach(k => { if (p.rates[k]) Object.assign(state.rates[k], p.rates[k]); });
+        if (p.gpu)      Object.assign(state.gpu, p.gpu);
+        if (p.reserved) {
+          if (p.reserved.discount1yr) Object.assign(state.reserved.discount1yr, p.reserved.discount1yr);
+          if (p.reserved.discount3yr) Object.assign(state.reserved.discount3yr, p.reserved.discount3yr);
+        }
+        if (p.fx != null) state.fx = p.fx;
+        return true;
+      } catch(_) { return false; }
+    }
+
+    // ── Scenarios ─────────────────────────────────────────────────────────────
+    function getScenarios() {
+      try { return JSON.parse(localStorage.getItem(SCENARIOS_KEY) || '[]'); } catch(_) { return []; }
+    }
+    function persistScenarios(list) {
+      try { localStorage.setItem(SCENARIOS_KEY, JSON.stringify(list)); } catch(_) {}
+    }
+    function saveScenario() {
+      const name = prompt('Nome do cenário:');
+      if (!name || !name.trim()) return;
+      const list = getScenarios();
+      list.push({
+        name: name.trim(), ts: Date.now(),
+        workload: JSON.parse(JSON.stringify(state.workload)),
+        rates:    JSON.parse(JSON.stringify(state.rates)),
+        gpu:      JSON.parse(JSON.stringify(state.gpu)),
+        reserved: JSON.parse(JSON.stringify(state.reserved)),
+        fx: state.fx
+      });
+      persistScenarios(list);
+      renderScenarios();
+      showToast(`Cenário "${name.trim()}" salvo`);
+    }
+    function loadScenario(idx) {
+      const s = getScenarios()[idx];
+      if (!s) return;
+      Object.assign(state.workload, s.workload);
+      ['aws','gcp','azure'].forEach(k => { if (s.rates[k]) Object.assign(state.rates[k], s.rates[k]); });
+      Object.assign(state.gpu, s.gpu);
+      if (s.reserved) {
+        if (s.reserved.discount1yr) Object.assign(state.reserved.discount1yr, s.reserved.discount1yr);
+        if (s.reserved.discount3yr) Object.assign(state.reserved.discount3yr, s.reserved.discount3yr);
+      }
+      if (s.fx != null) { state.fx = s.fx; document.getElementById('fxRate').value = s.fx; document.getElementById('fxLabel').textContent = fxSymbol(); }
+      saveState();
+      renderInputs();
+      renderReservedInputs();
+      refresh();
+      showToast(`Cenário "${s.name}" carregado`);
+    }
+    function deleteScenario(idx) {
+      const list = getScenarios();
+      const name = list[idx]?.name;
+      list.splice(idx, 1);
+      persistScenarios(list);
+      renderScenarios();
+      if (name) showToast(`Cenário "${name}" removido`);
+    }
+    function renderScenarios() {
+      const list = getScenarios();
+      const el   = document.getElementById('scenariosList');
+      if (!list.length) {
+        el.innerHTML = '<p style="font-size:var(--text-xs);color:var(--color-text-faint)">Nenhum cenário salvo.</p>';
+        return;
+      }
+      el.innerHTML = list.map((s, i) => `
+        <div class="scenario-item">
+          <span class="scenario-name" title="${s.name}">${s.name}</span>
+          <button class="btn-secondary" onclick="loadScenario(${i})" title="Carregar cenário">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M13 6l6 6-6 6"/></svg>
+          </button>
+          <button class="btn-secondary btn-danger" onclick="deleteScenario(${i})" title="Excluir cenário">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          </button>
+        </div>`).join('');
+    }
+
+    // ── Toast ─────────────────────────────────────────────────────────────────
+    let toastTimer;
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+    }
+
+    // ── CSV Export ────────────────────────────────────────────────────────────
+    function exportCSV() {
+      const aws = calcProvider('aws'), gcp = calcProvider('gcp'), azure = calcProvider('azure');
+      const sym = fxSymbol();
+      const fmt = v => (v * fxRate()).toFixed(2);
+      const rows = [
+        ['Componente', `AWS (${sym})`, `Google Cloud (${sym})`, `Azure (${sym})`],
+        ['Kubernetes',              fmt(aws.kubernetes),    fmt(gcp.kubernetes),    fmt(azure.kubernetes)],
+        ['SQL gerenciado',          fmt(aws.sql),           fmt(gcp.sql),           fmt(azure.sql)],
+        ['Armazenamento de objetos',fmt(aws.objectStorage), fmt(gcp.objectStorage), fmt(azure.objectStorage)],
+        ['CDN',                     fmt(aws.cdn),           fmt(gcp.cdn),           fmt(azure.cdn)],
+        ['Load Balancer',           fmt(aws.loadBalancer),  fmt(gcp.loadBalancer),  fmt(azure.loadBalancer)],
+        ['Egress',                  fmt(aws.egress),        fmt(gcp.egress),        fmt(azure.egress)],
+        ['Inferência de LLM',       fmt(aws.llm),           fmt(gcp.llm),           fmt(azure.llm)],
+        ['Total on-demand',         fmt(aws.total),         fmt(gcp.total),         fmt(azure.total)],
+        [],
+        [`Reservado 1 ano (${sym})`, `AWS (${sym})`, `Google Cloud (${sym})`, `Azure (${sym})`],
+        ['Custo / mês',
+          fmt(aws.total * (1 - state.reserved.discount1yr.aws)),
+          fmt(gcp.total * (1 - state.reserved.discount1yr.gcp)),
+          fmt(azure.total * (1 - state.reserved.discount1yr.azure))],
+        ['Economia anual',
+          fmt(aws.total * state.reserved.discount1yr.aws * 12),
+          fmt(gcp.total * state.reserved.discount1yr.gcp * 12),
+          fmt(azure.total * state.reserved.discount1yr.azure * 12)],
+        [],
+        [`Reservado 3 anos (${sym})`, `AWS (${sym})`, `Google Cloud (${sym})`, `Azure (${sym})`],
+        ['Custo / mês',
+          fmt(aws.total * (1 - state.reserved.discount3yr.aws)),
+          fmt(gcp.total * (1 - state.reserved.discount3yr.gcp)),
+          fmt(azure.total * (1 - state.reserved.discount3yr.azure))],
+        ['Economia em 3 anos',
+          fmt(aws.total * state.reserved.discount3yr.aws * 36),
+          fmt(gcp.total * state.reserved.discount3yr.gcp * 36),
+          fmt(azure.total * state.reserved.discount3yr.azure * 36)]
+      ];
+      const csv  = rows.map(r => r.map(c => `"${c ?? ''}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a    = document.createElement('a');
+      a.href     = URL.createObjectURL(blob);
+      a.download = `cloud-costs-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    // ── Chart helpers ─────────────────────────────────────────────────────────
+    function chartOptions(extra = {}) {
+      const s = getComputedStyle(document.documentElement);
+      return {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: s.getPropertyValue('--color-text').trim(), font: { family: 'Satoshi' } } } },
+        scales: {
+          x: { ticks: { color: s.getPropertyValue('--color-text-muted').trim() }, grid: { color: s.getPropertyValue('--color-divider').trim() }, ...extra.x },
+          y: { ticks: { color: s.getPropertyValue('--color-text-muted').trim() }, grid: { color: s.getPropertyValue('--color-divider').trim() }, ...extra.y }
+        }
+      };
+    }
+
+    // ── Render: Inputs ────────────────────────────────────────────────────────
+    function renderInputs() {
+      document.getElementById('workloadInputs').innerHTML = fieldDefs.map(([key, label, step]) =>
+        `<div class="field"><label for="${key}">${label}</label><input id="${key}" type="number" step="${step}" value="${state.workload[key]}" data-scope="workload" data-key="${key}" /></div>`
+      ).join('');
+      document.getElementById('gpuInputs').innerHTML = gpuDefs.map(([key, label, step]) =>
+        `<div class="field"><label for="gpu-${key}">${label}</label><input id="gpu-${key}" type="number" step="${step}" value="${state.gpu[key]}" data-scope="gpu" data-key="${key}" /></div>`
+      ).join('');
+      document.getElementById('rateCardTables').innerHTML = ['aws', 'gcp', 'azure'].map(p =>
+        `<article class="card"><h3><span class="provider-pill ${p}">${providerMeta[p].label}</span></h3>
+         <div class="inputs-grid">${Object.entries(state.rates[p]).map(([key, val]) =>
+          `<div class="field"><label for="${p}-${key}">${key.replace(/([A-Z])/g,' $1').replace(/^./,c=>c.toUpperCase())}</label>
+           <input id="${p}-${key}" type="number" step="0.001" value="${val}" data-scope="rate" data-provider="${p}" data-key="${key}" /></div>`
+        ).join('')}</div></article>`
+      ).join('');
+    }
+    function renderReservedInputs() {
+      document.getElementById('reservedDiscountInputs').innerHTML = ['aws', 'gcp', 'azure'].flatMap(p => [
+        `<div class="field"><label for="r1-${p}">${providerMeta[p].label} — desconto 1 ano (0–1)</label>
+         <input id="r1-${p}" type="number" step="0.01" min="0" max="0.99" value="${state.reserved.discount1yr[p]}" data-scope="reserved" data-term="1yr" data-provider="${p}" /></div>`,
+        `<div class="field"><label for="r3-${p}">${providerMeta[p].label} — desconto 3 anos (0–1)</label>
+         <input id="r3-${p}" type="number" step="0.01" min="0" max="0.99" value="${state.reserved.discount3yr[p]}" data-scope="reserved" data-term="3yr" data-provider="${p}" /></div>`
+      ]).join('');
+    }
+
+    // ── Render: Overview ──────────────────────────────────────────────────────
+    function renderOverview() {
+      const aws = calcProvider('aws'), gcp = calcProvider('gcp'), azure = calcProvider('azure');
+      const providers = [
+        { key: 'aws',   label: 'AWS',          ...aws },
+        { key: 'gcp',   label: 'Google Cloud', ...gcp },
+        { key: 'azure', label: 'Azure',         ...azure }
+      ];
+      const sorted    = [...providers].sort((a, b) => a.total - b.total);
+      const lowest    = sorted[0], highest = sorted[2];
+      const maxInf    = Math.max(...providers.map(p => p.llm / p.total));
+
+      document.getElementById('kpiLowest').textContent       = currency(lowest.total);
+      document.getElementById('kpiLowestLabel').textContent  = lowest.label;
+      document.getElementById('kpiHighest').textContent      = currency(highest.total);
+      document.getElementById('kpiHighestLabel').textContent = highest.label;
+      document.getElementById('kpiSpread').textContent       = currency(highest.total - lowest.total);
+      document.getElementById('kpiInferenceShare').textContent = percent(maxInf);
+
+      const breakdownRows = [
+        ['Kubernetes',               'kubernetes'],
+        ['SQL gerenciado',           'sql'],
+        ['Armazenamento de objetos', 'objectStorage'],
+        ['CDN',                      'cdn'],
+        ['Load Balancer',            'loadBalancer'],
+        ['Egress',                   'egress'],
+        ['Inferência de LLM',        'llm'],
+        ['Total',                    'total']
+      ];
+      document.getElementById('breakdownBody').innerHTML = breakdownRows.map(([label, key]) =>
+        `<tr${key === 'total' ? ' class="total-row"' : ''}><td>${label}</td><td class="money">${currency(aws[key])}</td><td class="money">${currency(gcp[key])}</td><td class="money">${currency(azure[key])}</td></tr>`
+      ).join('');
+
+      totalChart?.destroy();
+      totalChart = new Chart(document.getElementById('totalChart'), {
+        type: 'bar',
+        data: {
+          labels: providers.map(p => p.label),
+          datasets: [{ label: 'Total mensal', data: providers.map(p => +(p.total * fxRate()).toFixed(0)), backgroundColor: providers.map(p => providerMeta[p.key].color), borderRadius: 10 }]
+        },
+        options: chartOptions()
+      });
+
+      const stackComponents = [
+        { label: 'Kubernetes',    key: 'kubernetes',    color: '#01696f' },
+        { label: 'SQL gerenciado',key: 'sql',           color: '#006494' },
+        { label: 'Object Storage',key: 'objectStorage', color: '#d19900' },
+        { label: 'CDN',           key: 'cdn',           color: '#a12c7b' },
+        { label: 'Load Balancer', key: 'loadBalancer',  color: '#437a22' },
+        { label: 'Egress',        key: 'egress',        color: '#5591c7' },
+        { label: 'LLM',           key: 'llm',           color: '#da7101' }
+      ];
+      mixChart?.destroy();
+      mixChart = new Chart(document.getElementById('mixChart'), {
+        type: 'bar',
+        data: {
+          labels: providers.map(p => p.label),
+          datasets: stackComponents.map(c => ({
+            label: c.label,
+            data:  providers.map(p => +(p[c.key] * fxRate()).toFixed(0)),
+            backgroundColor: c.color
+          }))
+        },
+        options: chartOptions({ x: { stacked: true }, y: { stacked: true } })
+      });
+    }
+
+    // ── Render: Commitment / Reserved ─────────────────────────────────────────
+    function renderReserved() {
+      const colors = ['#da7101', '#006494', '#7a39bb'];
+      const data = ['aws', 'gcp', 'azure'].map((p, i) => {
+        const total = calcProvider(p).total;
+        const d1 = state.reserved.discount1yr[p];
+        const d3 = state.reserved.discount3yr[p];
+        return { p, label: providerMeta[p].label, color: colors[i], total, r1: total * (1 - d1), r3: total * (1 - d3), saving1yr: total * d1 * 12, saving3yr: total * d3 * 36 };
+      });
+
+      document.getElementById('reservedBody').innerHTML = data.map(d =>
+        `<tr>
+          <td><span class="provider-pill ${d.p}">${d.label}</span></td>
+          <td class="money">${currency(d.total)}</td>
+          <td class="money">${currency(d.r1)}</td>
+          <td class="money" style="color:var(--color-success)">${currency(d.saving1yr)}/ano</td>
+          <td class="money">${currency(d.r3)}</td>
+          <td class="money" style="color:var(--color-success)">${currency(d.saving3yr)}/3 anos</td>
+        </tr>`
+      ).join('');
+
+      reserved1yrChart?.destroy();
+      reserved1yrChart = new Chart(document.getElementById('reserved1yrChart'), {
+        type: 'bar',
+        data: {
+          labels: data.map(d => d.label),
+          datasets: [
+            { label: 'On-demand (anual)',    data: data.map(d => +(d.total * fxRate() * 12).toFixed(0)), backgroundColor: data.map(d => d.color + '55'), borderRadius: 8 },
+            { label: 'Reservado 1 ano (anual)', data: data.map(d => +(d.r1 * fxRate() * 12).toFixed(0)),    backgroundColor: data.map(d => d.color), borderRadius: 8 }
+          ]
+        },
+        options: chartOptions()
+      });
+
+      reserved3yrChart?.destroy();
+      reserved3yrChart = new Chart(document.getElementById('reserved3yrChart'), {
+        type: 'bar',
+        data: {
+          labels: data.map(d => d.label),
+          datasets: [
+            { label: 'On-demand (3 anos)',    data: data.map(d => +(d.total * fxRate() * 36).toFixed(0)), backgroundColor: data.map(d => d.color + '55'), borderRadius: 8 },
+            { label: 'Reservado 3 anos', data: data.map(d => +(d.r3 * fxRate() * 36).toFixed(0)),    backgroundColor: data.map(d => d.color), borderRadius: 8 }
+          ]
+        },
+        options: chartOptions()
+      });
+    }
+
+    // ── Render: Break-even ────────────────────────────────────────────────────
+    function renderBreakEven() {
+      const self = calcSelfHosted(), rows = calcBreakeven();
+      const pillMap = { bedrock: 'bedrock', vertex: 'vertex', aoai: 'aoai' };
+      const nameMap = { bedrock: 'Amazon Bedrock', vertex: 'Vertex AI', aoai: 'Azure OpenAI' };
+
+      document.getElementById('breakevenBody').innerHTML =
+        `<tr><td><span class="provider-pill selfhost">GPU self-hosted</span></td>
+         <td class="money">${currency(self.fixedMonthly)}</td>
+         <td class="money">${currencyPrecise(self.variablePerRequest)}</td>
+         <td class="num">Capacidade ${number(self.practicalMonthlyCapacity)}</td>
+         <td class="money">${currency(self.currentLoadCost)}</td></tr>` +
+        rows.map(row =>
+          `<tr><td><span class="provider-pill ${pillMap[row.key]}">${nameMap[row.key]}</span></td>
+           <td class="money">${currency(row.currentMonthlyCost)}</td>
+           <td class="money">${currencyPrecise(row.variablePerRequest)}</td>
+           <td class="num">${number(row.breakEvenRequests)}</td>
+           <td class="money">${currency(row.currentMonthlyCost)}</td></tr>`
+        ).join('');
+
+      breakevenChart?.destroy();
+      breakevenChart = new Chart(document.getElementById('breakevenChart'), {
+        type: 'bar',
+        data: {
+          labels: ['Amazon Bedrock', 'Vertex AI', 'Azure OpenAI'],
+          datasets: [
+            { label: 'Requisições de equilíbrio / mês', data: rows.map(r => Math.round(r.breakEvenRequests)), backgroundColor: ['#da7101', '#006494', '#7a39bb'], borderRadius: 10 },
+            { label: 'Capacidade mensal self-hosted',   data: rows.map(() => Math.round(self.practicalMonthlyCapacity)), type: 'line', borderColor: '#437a22', backgroundColor: '#437a22', tension: 0.35 }
+          ]
+        },
+        options: chartOptions()
+      });
+    }
+
+    function refresh() { renderOverview(); renderReserved(); renderBreakEven(); }
+
+    // ── Event listeners ───────────────────────────────────────────────────────
     document.body.addEventListener('input', e => {
-      const el = e.target;
+      const el  = e.target;
       if (!(el instanceof HTMLInputElement)) return;
-      const raw = Number(el.value); if (Number.isNaN(raw)) return;
-      if (el.dataset.scope === 'workload') state.workload[el.dataset.key] = raw;
-      if (el.dataset.scope === 'gpu') state.gpu[el.dataset.key] = raw;
-      if (el.dataset.scope === 'rate') state.rates[el.dataset.provider][el.dataset.key] = raw;
+      const raw = Number(el.value);
+      if (Number.isNaN(raw)) return;
+
+      if (el.dataset.scope === 'workload')  state.workload[el.dataset.key] = raw;
+      else if (el.dataset.scope === 'gpu')  state.gpu[el.dataset.key] = raw;
+      else if (el.dataset.scope === 'rate') state.rates[el.dataset.provider][el.dataset.key] = raw;
+      else if (el.dataset.scope === 'reserved') {
+        const bucket = el.dataset.term === '1yr' ? 'discount1yr' : 'discount3yr';
+        state.reserved[bucket][el.dataset.provider] = raw;
+      } else if (el.id === 'fxRate') {
+        state.fx = raw > 0 ? raw : 1;
+        document.getElementById('fxLabel').textContent = fxSymbol();
+      }
       saveState();
       refresh();
     });
+
     document.querySelectorAll('.nav-button').forEach(btn => btn.addEventListener('click', () => {
       const target = btn.dataset.target;
       document.querySelectorAll('.nav-button').forEach(b => b.classList.toggle('active', b === btn));
-      document.querySelectorAll('.content-section').forEach(sec => sec.classList.toggle('active', sec.id === target));
+      document.querySelectorAll('.content-section').forEach(s => s.classList.toggle('active', s.id === target));
       document.getElementById('sidebar').classList.remove('open');
     }));
-    document.getElementById('mobileMenu').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
-    (function(){ const toggle = document.querySelector('[data-theme-toggle]'); const root = document.documentElement; let theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; root.setAttribute('data-theme', theme); const setIcon = () => { toggle.innerHTML = theme === 'dark' ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>'; }; setIcon(); toggle.addEventListener('click', () => { theme = theme === 'dark' ? 'light' : 'dark'; root.setAttribute('data-theme', theme); setIcon(); refresh(); }); })();
-    loadState(); renderInputs(); refresh();
+
+    document.getElementById('mobileMenu').addEventListener('click', () =>
+      document.getElementById('sidebar').classList.toggle('open')
+    );
+    document.getElementById('saveScenarioBtn').addEventListener('click', saveScenario);
+    document.getElementById('shareBtn').addEventListener('click', () => {
+      const url = encodeStateToURL();
+      navigator.clipboard.writeText(url)
+        .then(() => showToast('Link copiado!'))
+        .catch(() => prompt('Copie o link:', url));
+    });
+    document.getElementById('exportCsvBtn').addEventListener('click', exportCSV);
+
+    (function () {
+      const toggle = document.querySelector('[data-theme-toggle]');
+      const root   = document.documentElement;
+      let theme    = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      root.setAttribute('data-theme', theme);
+      const sunIcon  = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+      const moonIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+      const setIcon  = () => { toggle.innerHTML = theme === 'dark' ? sunIcon : moonIcon; };
+      setIcon();
+      toggle.addEventListener('click', () => {
+        theme = theme === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', theme);
+        setIcon();
+        refresh();
+      });
+    })();
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    const fromURL = loadStateFromURL();
+    if (!fromURL) loadState();
+    if (Math.abs(state.fx - 1) > 0.02) {
+      document.getElementById('fxRate').value = state.fx;
+      document.getElementById('fxLabel').textContent = fxSymbol();
+    }
+    renderInputs();
+    renderReservedInputs();
+    renderScenarios();
+    refresh();
   </script>
 </body>
 </html>
