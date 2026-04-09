@@ -15,7 +15,11 @@
   <meta name="twitter:title" content="Calculadora de Custos em Nuvem">
   <meta name="twitter:description" content="Compare AWS, Google Cloud e Azure gratuitamente. Modelo editável de custos mensais com análise de break-even de GPU.">
   <meta name="robots" content="index, follow">
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="assets/manifest.json">
+  <meta name="theme-color" content="#01696f">
+  <meta property="og:image" content="https://seskelsen.github.io/esk-cloudcalc/assets/og-image.svg">
+  <meta name="twitter:image" content="https://seskelsen.github.io/esk-cloudcalc/assets/og-image.svg">
   <script src="assets/chart.min.js"></script>
   <style>
     :root, [data-theme="light"] {
@@ -35,7 +39,7 @@
       --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem;
       --shadow-sm: 0 1px 2px oklch(0.2 0.01 80 / 0.06); --shadow-md: 0 4px 12px oklch(0.2 0.01 80 / 0.08);
       --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
-      --font-body: 'Satoshi', 'Inter', sans-serif;
+      --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
     }
     [data-theme="dark"] {
       --color-bg: #171614; --color-surface: #1c1b19; --color-surface-2: #201f1d;
@@ -112,6 +116,18 @@
     .cost-table td.money, .cost-table td.num { font-variant-numeric: tabular-nums lining-nums; }
     .cost-table tr.total-row td { font-weight: 700; border-top: 2px solid var(--color-border); }
     .chart-shell { min-height: 320px; position: relative; }
+    .chart-shell-wrap { position: relative; }
+    .chart-png-btn { position: absolute; top: var(--space-2); right: var(--space-2); opacity: 0; transition: opacity 0.15s; z-index: 2; }
+    .chart-shell-wrap:hover .chart-png-btn { opacity: 1; }
+    @media print {
+      .sidebar, .header-tools, #mobileMenu, .chart-png-btn, #toast { display: none !important; }
+      .dashboard { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; }
+      .main { grid-column: 1; overflow: visible; padding: var(--space-4); }
+      .content-section { display: block !important; margin-bottom: var(--space-8); }
+      .content-section + .content-section { page-break-before: always; }
+      canvas { max-height: 280px; }
+      body { overflow: auto; }
+    }
     .note { padding: var(--space-4); border-radius: var(--radius-lg); background: color-mix(in oklab, var(--color-primary) 7%, var(--color-surface)); color: var(--color-text); font-size: var(--text-sm); }
     .note a { color: inherit; }
     .toolbar { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
@@ -124,7 +140,7 @@
   </style>
 </head>
 <body>
-  <a href="#main" style="position:absolute;left:-9999px;top:auto;">Pular para o conteúdo</a>
+  <a href="#main" style="position:absolute;left:-9999px;top:auto;background:var(--color-primary);color:#fff;padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);z-index:999">Pular para o conteúdo</a>
   <div id="toast" class="toast" aria-live="polite"></div>
   <div class="dashboard">
     <aside class="sidebar" id="sidebar">
@@ -148,6 +164,7 @@
             <li><button class="nav-button" data-target="inputs">Entradas</button></li>
             <li><button class="nav-button" data-target="commitment">Compromisso</button></li>
             <li><button class="nav-button" data-target="break-even">Ponto de equilíbrio</button></li>
+            <li><button class="nav-button" data-target="comparison">Comparação</button></li>
             <li><button class="nav-button" data-target="assumptions">Premissas</button></li>
           </ul>
         </div>
@@ -170,12 +187,24 @@
       </div>
       <div class="note">O painel modela Kubernetes, SQL gerenciado, object storage, CDN, Load Balancer, egress e inferência de LLM. Use para estimativas direcionais e substitua pelos preços contratados.</div>
       <div class="note" style="margin-top:var(--space-4);font-size:var(--text-xs);color:var(--color-text-muted)">
-        <strong>Preços de referência:</strong> abril de 2025.<br>
+        <strong>Preços de referência:</strong> abril de 2026.<br>
         Consulte as calculadoras oficiais:
         <a href="https://calculator.aws/pricing/2/home" target="_blank" rel="noopener" style="color:var(--color-orange)">AWS</a> ·
         <a href="https://cloud.google.com/products/calculator" target="_blank" rel="noopener" style="color:var(--color-blue)">GCP</a> ·
         <a href="https://azure.microsoft.com/pricing/calculator/" target="_blank" rel="noopener" style="color:var(--color-purple)">Azure</a>
       </div>
+      <div class="note" style="margin-top:var(--space-4);font-size:var(--text-xs);color:var(--color-text-muted)">
+        <a href="https://github.com/seskelsen/esk-cloudcalc/issues/new?title=Pre%C3%A7o+incorreto&labels=prices" target="_blank" rel="noopener" style="color:var(--color-primary)">Reportar preço incorreto →</a>
+      </div>
+      <details style="margin-top:var(--space-4)">
+        <summary style="font-size:var(--text-xs);font-weight:600;cursor:pointer;color:var(--color-text-muted)">Novidades</summary>
+        <div style="font-size:var(--text-xs);color:var(--color-text-faint);margin-top:var(--space-2);line-height:1.8">
+          <strong style="color:var(--color-text-muted)">v2.0 — abril/2026</strong><br>
+          Preços atualizados · Serverless · Cache · API Gateway · Regiões · Spot · Comparação de cenários · PNG · PWA offline<br><br>
+          <strong style="color:var(--color-text-muted)">v1.0 — abril/2025</strong><br>
+          Lançamento inicial · Kubernetes · SQL · CDN · LLM · GPU break-even · Reservado 1/3 anos
+        </div>
+      </details>
     </aside>
 
     <header class="header">
@@ -188,6 +217,14 @@
       </div>
       <div class="header-tools">
         <div class="fx-group">
+          <label for="regionSelect">Região</label>
+          <select id="regionSelect" style="min-height:36px;border:1px solid var(--color-border);background:var(--color-surface-2);border-radius:var(--radius-md);padding:0 var(--space-2);font-size:var(--text-xs)" aria-label="Região de preços">
+            <option value="us-east">EUA leste</option>
+            <option value="eu-west">Europa oeste (+5%)</option>
+            <option value="sa-east">Brasil (+20%)</option>
+          </select>
+        </div>
+        <div class="fx-group">
           <label for="fxRate">1 USD =</label>
           <input id="fxRate" type="number" step="0.01" min="0.01" value="1" aria-label="Taxa de câmbio">
           <span id="fxLabel">USD</span>
@@ -198,6 +235,9 @@
         <button class="btn-icon" id="exportCsvBtn" title="Exportar CSV" aria-label="Exportar CSV">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </button>
+        <button class="btn-icon" id="printBtn" title="Imprimir / Salvar PDF" aria-label="Imprimir">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        </button>
         <button class="theme-toggle" data-theme-toggle aria-label="Alternar tema">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </button>
@@ -207,11 +247,11 @@
     <main class="main" id="main">
       <div role="note" style="display:flex;align-items:flex-start;gap:var(--space-3);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);border-radius:var(--radius-lg);background:color-mix(in oklab,var(--color-gold) 10%,var(--color-surface));border:1px solid color-mix(in oklab,var(--color-gold) 25%,transparent);font-size:var(--text-xs);color:var(--color-text-muted)">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;color:var(--color-gold)"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-        <span><strong style="color:var(--color-text)">Estimativas direcionais.</strong> Preços de tabela de abril de 2025. Não incluem descontos por volume, preços negociados ou variações regionais. Use como ponto de partida.</span>
+        <span><strong style="color:var(--color-text)">Estimativas direcionais.</strong> Preços de tabela de abril de 2026 — v2.0. Não incluem descontos por volume, preços negociados ou variações regionais. Use como ponto de partida.</span>
       </div>
 
       <!-- ── Visão geral ── -->
-      <section class="content-section active" id="overview">
+      <section class="content-section active" id="overview" role="region" aria-label="Visão geral">
         <div class="section-grid">
           <div class="kpi-grid">
             <article class="card"><div class="kpi-label">Menor total mensal</div><div class="kpi-value" id="kpiLowest">–</div><p class="meta" id="kpiLowestLabel">Provedor</p></article>
@@ -220,8 +260,8 @@
             <article class="card"><div class="kpi-label">Peso da inferência</div><div class="kpi-value" id="kpiInferenceShare">–</div><p class="meta">Maior proporção de IA no total</p></article>
           </div>
           <div class="card-grid-2">
-            <article class="card"><h3>Totais por provedor</h3><p class="meta">Total do stack para a carga mensal editável.</p><div class="chart-shell"><canvas id="totalChart"></canvas></div></article>
-            <article class="card"><h3>Composição de custos</h3><p class="meta">Composição por componente em cada nuvem.</p><div class="chart-shell"><canvas id="mixChart"></canvas></div></article>
+            <article class="card"><h3>Totais por provedor</h3><p class="meta">Total do stack para a carga mensal editável.</p><div class="chart-shell-wrap"><div class="chart-shell"><canvas id="totalChart"></canvas></div><button class="btn-icon chart-png-btn" data-chart-png="totalChart" title="Baixar PNG" aria-label="Baixar gráfico PNG"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button></div></article>
+            <article class="card"><h3>Composição de custos</h3><p class="meta">Composição por componente em cada nuvem.</p><div class="chart-shell-wrap"><div class="chart-shell"><canvas id="mixChart"></canvas></div><button class="btn-icon chart-png-btn" data-chart-png="mixChart" title="Baixar PNG" aria-label="Baixar gráfico PNG"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button></div></article>
           </div>
           <article class="card table-wrap">
             <h3>Detalhamento mensal do stack</h3>
@@ -235,7 +275,7 @@
       </section>
 
       <!-- ── Entradas ── -->
-      <section class="content-section" id="inputs">
+      <section class="content-section" id="inputs" role="region" aria-label="Entradas">
         <div class="section-grid">
           <article class="card"><h3>Entradas da carga</h3><p class="meta">Ajuste as premissas de uso do stack padrão.</p><div class="inputs-grid" id="workloadInputs"></div></article>
           <article class="card"><h3>Tabela de preços por provedor</h3><p class="meta">Estimativas direcionais. Substitua pelos preços dos calculadores oficiais ou contratos negociados.</p><div class="stack-grid" id="rateCardTables"></div></article>
@@ -243,7 +283,7 @@
       </section>
 
       <!-- ── Compromisso ── -->
-      <section class="content-section" id="commitment">
+      <section class="content-section" id="commitment" role="region" aria-label="Compromisso">
         <div class="section-grid">
           <article class="card">
             <h3>Descontos de compromisso</h3>
@@ -262,11 +302,26 @@
             <article class="card"><h3>Total anual — 1 ano</h3><p class="meta">On-demand vs comprometido por 1 ano.</p><div class="chart-shell"><canvas id="reserved1yrChart"></canvas></div></article>
             <article class="card"><h3>Total em 3 anos</h3><p class="meta">On-demand vs comprometido por 3 anos.</p><div class="chart-shell"><canvas id="reserved3yrChart"></canvas></div></article>
           </div>
+          <article class="card">
+            <h3>Spot / Preemptible / Spot VMs</h3>
+            <p class="meta">Desconto sobre o preço on-demand para cargas interromptíveis. Edite os percentuais de acordo com o tipo de instância do seu contrato.</p>
+            <div class="inputs-grid">
+              <div class="field"><label for="spot-aws">AWS Spot (desconto, 0–1)</label><input id="spot-aws" type="number" step="0.01" min="0" max="0.99" data-scope="spot" data-key="discountAws" /></div>
+              <div class="field"><label for="spot-gcp">GCP Preemptible (desconto, 0–1)</label><input id="spot-gcp" type="number" step="0.01" min="0" max="0.99" data-scope="spot" data-key="discountGcp" /></div>
+              <div class="field"><label for="spot-azure">Azure Spot (desconto, 0–1)</label><input id="spot-azure" type="number" step="0.01" min="0" max="0.99" data-scope="spot" data-key="discountAzure" /></div>
+            </div>
+            <div class="table-wrap" style="margin-top:var(--space-4)">
+              <table class="cost-table" aria-label="Comparativo on-demand vs spot">
+                <thead><tr><th>Provedor</th><th>On-demand / mês</th><th>Spot / mês</th><th>Economia mensal</th><th>Economia anual</th></tr></thead>
+                <tbody id="spotBody"></tbody>
+              </table>
+            </div>
+          </article>
         </div>
       </section>
 
       <!-- ── Ponto de equilíbrio ── -->
-      <section class="content-section" id="break-even">
+      <section class="content-section" id="break-even" role="region" aria-label="Ponto de equilíbrio">
         <div class="section-grid">
           <div class="card-grid-2">
             <article class="card"><h3>Economia de GPU</h3><p class="meta">Compare o custo mensal de GPU self-hosted com APIs de inferência gerenciadas.</p><div class="inputs-grid" id="gpuInputs"></div></article>
@@ -283,8 +338,33 @@
         </div>
       </section>
 
+      <!-- ── Comparação ── -->
+      <section class="content-section" id="comparison" role="region" aria-label="Comparação de cenários">
+        <div class="section-grid">
+          <article class="card">
+            <h3>Comparar cenários</h3>
+            <p class="meta">Selecione dois cenários salvos para comparar lado a lado. Salve cenários na barra lateral antes de usar esta visão.</p>
+            <div style="display:flex;gap:var(--space-4);flex-wrap:wrap;margin-bottom:var(--space-4)">
+              <div class="field"><label for="compareSelA">Cenário A</label>
+                <select id="compareSelA" class="field" style="min-height:44px;border:1px solid var(--color-border);background:var(--color-surface-2);border-radius:var(--radius-md);padding:0 var(--space-3)"></select></div>
+              <div class="field"><label for="compareSelB">Cenário B</label>
+                <select id="compareSelB" class="field" style="min-height:44px;border:1px solid var(--color-border);background:var(--color-surface-2);border-radius:var(--radius-md);padding:0 var(--space-3)"></select></div>
+            </div>
+          </article>
+          <article class="card table-wrap">
+            <h3>Detalhamento comparativo</h3>
+            <p class="meta">Δ% = (B − A) / A. Vermelho = B mais caro, verde = B mais barato.</p>
+            <table class="cost-table" aria-label="Comparação entre cenários">
+              <thead><tr><th>Componente</th><th>A — AWS</th><th>A — GCP</th><th>A — Azure</th><th>B — AWS</th><th>B — GCP</th><th>B — Azure</th><th>Δ Total %</th></tr></thead>
+              <tbody id="comparisonBody"></tbody>
+            </table>
+          </article>
+          <article class="card"><h3>Total por provedor</h3><p class="meta">Cenário A (transparente) vs Cenário B (cheio).</p><div class="chart-shell"><canvas id="comparisonChart"></canvas></div></article>
+        </div>
+      </section>
+
       <!-- ── Premissas ── -->
-      <section class="content-section" id="assumptions">
+      <section class="content-section" id="assumptions" role="region" aria-label="Premissas e fórmulas">
         <div class="section-grid">
           <article class="card"><h3>Notas do modelo</h3><p class="meta">Como o painel calcula os totais.</p>
             <div class="stack-grid">
@@ -292,6 +372,9 @@
               <div class="note">Object storage: GB armazenado + recuperação/API. CDN: GB de saída + volume de requisições.</div>
               <div class="note">Load Balancer: horas ativas (modelo simplificado, sem LCU/RCU). Egress: saída inter-região em GB.</div>
               <div class="note">LLM gerenciado: volume de tokens com tarifas separadas de entrada e saída.</div>
+              <div class="note">Serverless: taxa de invocação por milhão + duração em GB-s (memória × tempo). Lambda, Cloud Functions, Azure Functions.</div>
+              <div class="note">Cache gerenciado: nós × horas (ElastiCache, Memorystore, Azure Cache for Redis).</div>
+              <div class="note">API Gateway: chamadas faturadas por milhão (Amazon API GW, Cloud Endpoints, Azure APIM).</div>
               <div class="note">GPU self-hosted: amortização + energia + rack + overhead de plataforma. Use para análise de break-even.</div>
               <div class="note">Descontos de compromisso são médias de mercado. Variam por tipo de instância e região — substitua pelos valores do seu contrato.</div>
             </div>
@@ -307,6 +390,9 @@
               <div class="stack-row"><div>LLM</div><div>Mtok-in × t-in + Mtok-out × t-out</div><div>250 × 0,8 + 60 × 3,2</div><div>USD/mês</div><div>–</div></div>
               <div class="stack-row"><div>Reservado</div><div>total × (1 − desconto)</div><div>8500 × (1 − 0,37)</div><div>USD/mês</div><div>Média de mercado</div></div>
               <div class="stack-row"><div>Break-even GPU</div><div>fixo ÷ custo-variável</div><div>4200 ÷ 0,022</div><div>req/mês</div><div>–</div></div>
+              <div class="stack-row"><div>Serverless</div><div>inv/M × tarifa + GB-s × tarifa</div><div>1M × 0,20 + 46800 × 0,0000167</div><div>USD/mês</div><div>GB-s = mem(GB)×dur(s)×inv</div></div>
+              <div class="stack-row"><div>Cache</div><div>nós × horas × tarifa</div><div>2 × 730 × 0,068</div><div>USD/mês</div><div>–</div></div>
+              <div class="stack-row"><div>API Gateway</div><div>chamadas(M) × tarifa/M</div><div>50 × 3,50</div><div>USD/mês</div><div>–</div></div>
             </div>
           </article>
         </div>
@@ -323,23 +409,30 @@
         objectStorageGb: 5000, objectRetrievalGb: 600,
         cdnEgressGb: 3000, cdnRequests10k: 2000,
         lbHours: 730, egressGb: 500,
-        llmRequests: 400000, avgInputTokens: 625, avgOutputTokens: 150
+        llmRequests: 400000, avgInputTokens: 625, avgOutputTokens: 150,
+        serverlessInvocations: 1000000, serverlessDurationMs: 300, serverlessMemoryMb: 512,
+        cacheNodes: 2, cacheHours: 730,
+        apiGatewayCallsM: 50
       },
       rates: {
-        aws:   { kubernetesControlPlane: 74, kubernetesNodeHour: 0.122, sqlBase: 55, sqlVcpuHour: 0.18, sqlStorageGb: 0.12, objectStorageGb: 0.023, objectRetrievalGb: 0.01, cdnEgressGb: 0.085, cdnRequest10k: 0.0075, lbHourly: 0.008, egressGb: 0.09, llmInputPerM: 0.8, llmOutputPerM: 3.2 },
-        gcp:   { kubernetesControlPlane: 74, kubernetesNodeHour: 0.114, sqlBase: 52, sqlVcpuHour: 0.17, sqlStorageGb: 0.11, objectStorageGb: 0.02, objectRetrievalGb: 0.012, cdnEgressGb: 0.08, cdnRequest10k: 0.008, lbHourly: 0.008, egressGb: 0.09, llmInputPerM: 0.75, llmOutputPerM: 3.0 },
-        azure: { kubernetesControlPlane: 73, kubernetesNodeHour: 0.126, sqlBase: 58, sqlVcpuHour: 0.185, sqlStorageGb: 0.125, objectStorageGb: 0.021, objectRetrievalGb: 0.011, cdnEgressGb: 0.087, cdnRequest10k: 0.009, lbHourly: 0.007, egressGb: 0.087, llmInputPerM: 0.85, llmOutputPerM: 3.4 }
+        aws:   { kubernetesControlPlane: 74, kubernetesNodeHour: 0.122, sqlBase: 58, sqlVcpuHour: 0.192, sqlStorageGb: 0.115, objectStorageGb: 0.023, objectRetrievalGb: 0.01, cdnEgressGb: 0.085, cdnRequest10k: 0.0075, lbHourly: 0.008, egressGb: 0.09, llmInputPerM: 0.60, llmOutputPerM: 2.40, serverlessInvocationPer1M: 0.20, serverlessDurationGbSec: 0.0000166667, cacheNodeHour: 0.068, apiGatewayCallsPer1M: 3.50 },
+        gcp:   { kubernetesControlPlane: 74, kubernetesNodeHour: 0.114, sqlBase: 54, sqlVcpuHour: 0.178, sqlStorageGb: 0.105, objectStorageGb: 0.020, objectRetrievalGb: 0.012, cdnEgressGb: 0.08, cdnRequest10k: 0.008, lbHourly: 0.008, egressGb: 0.09, llmInputPerM: 0.35, llmOutputPerM: 1.05, serverlessInvocationPer1M: 0.40, serverlessDurationGbSec: 0.0000025, cacheNodeHour: 0.049, apiGatewayCallsPer1M: 3.00 },
+        azure: { kubernetesControlPlane: 73, kubernetesNodeHour: 0.126, sqlBase: 60, sqlVcpuHour: 0.190, sqlStorageGb: 0.120, objectStorageGb: 0.021, objectRetrievalGb: 0.011, cdnEgressGb: 0.087, cdnRequest10k: 0.009, lbHourly: 0.007, egressGb: 0.087, llmInputPerM: 0.55, llmOutputPerM: 2.20, serverlessInvocationPer1M: 0.20, serverlessDurationGbSec: 0.000016, cacheNodeHour: 0.063, apiGatewayCallsPer1M: 3.50 }
       },
       gpu: { serverMonthly: 2600, powerCoolingMonthly: 450, rackOpsMonthly: 650, platformMonthly: 500, requestsPerHourCapacity: 1400, targetUtilization: 0.7 },
       reserved: {
         discount1yr: { aws: 0.37, gcp: 0.37, azure: 0.35 },
         discount3yr: { aws: 0.55, gcp: 0.57, azure: 0.50 }
       },
-      fx: 1
+      fx: 1,
+      region: 'us-east',
+      spot: { discountAws: 0.68, discountGcp: 0.60, discountAzure: 0.65 }
     };
     const state = JSON.parse(JSON.stringify(DEFAULTS));
 
     // ── Provider metadata ─────────────────────────────────────────────────────
+    const REGION_MULTIPLIERS = { 'us-east': 1.0, 'eu-west': 1.05, 'sa-east': 1.20 };
+    const REGION_LABELS = { 'us-east': 'EUA leste (us-east)', 'eu-west': 'Europa oeste (eu-west)', 'sa-east': 'Brasil (sa-east) +20%' };
     const providerMeta = {
       aws:     { label: 'AWS',           color: '#da7101' },
       gcp:     { label: 'Google Cloud',  color: '#006494' },
@@ -364,7 +457,13 @@
       ['egressGb',         'Egress inter-região (GB)', 1],
       ['llmRequests',      'Requisições de LLM por mês', 1],
       ['avgInputTokens',   'Média de tokens de entrada por requisição', 1],
-      ['avgOutputTokens',  'Média de tokens de saída por requisição', 1]
+      ['avgOutputTokens',  'Média de tokens de saída por requisição', 1],
+      ['serverlessInvocations', 'Invocações serverless por mês', 1000],
+      ['serverlessDurationMs',  'Duração média por invocação (ms)', 1],
+      ['serverlessMemoryMb',    'Memória alocada serverless (MB)', 128],
+      ['cacheNodes',            'Nós de cache gerenciado', 1],
+      ['cacheHours',            'Horas de cache por mês', 1],
+      ['apiGatewayCallsM',      'Chamadas de API Gateway (milhões/mês)', 1]
     ];
     const gpuDefs = [
       ['serverMonthly',          'Amortização / locação do servidor GPU', 1],
@@ -375,7 +474,7 @@
       ['targetUtilization',      'Utilização alvo (0–1)', 0.01]
     ];
 
-    let totalChart, mixChart, breakevenChart, reserved1yrChart, reserved3yrChart;
+    let totalChart, mixChart, breakevenChart, reserved1yrChart, reserved3yrChart, comparisonChart;
 
     // ── Formatters ────────────────────────────────────────────────────────────
     function fxRate() { return state.fx > 0 ? state.fx : 1; }
@@ -388,7 +487,9 @@
 
     // ── Calculations ──────────────────────────────────────────────────────────
     function calcProvider(provider) {
-      const w = state.workload, r = state.rates[provider];
+      const w = state.workload, r0 = state.rates[provider];
+      const mult = REGION_MULTIPLIERS[state.region] || 1;
+      const r = Object.fromEntries(Object.entries(r0).map(([k, v]) => [k, v * mult]));
       const inputMTok  = (w.llmRequests * w.avgInputTokens)  / 1_000_000;
       const outputMTok = (w.llmRequests * w.avgOutputTokens) / 1_000_000;
       const kubernetes    = r.kubernetesControlPlane + (r.kubernetesNodeHour * w.clusterHours * w.k8sWorkers);
@@ -398,8 +499,12 @@
       const loadBalancer  = r.lbHourly * w.lbHours;
       const egress        = r.egressGb * w.egressGb;
       const llm           = (r.llmInputPerM * inputMTok) + (r.llmOutputPerM * outputMTok);
-      const total         = kubernetes + sql + objectStorage + cdn + loadBalancer + egress + llm;
-      return { kubernetes, sql, objectStorage, cdn, loadBalancer, egress, llm, total };
+      const serverless    = (r.serverlessInvocationPer1M * (w.serverlessInvocations / 1e6))
+                          + (r.serverlessDurationGbSec * w.serverlessInvocations * (w.serverlessDurationMs / 1000) * (w.serverlessMemoryMb / 1024));
+      const cache         = r.cacheNodeHour * w.cacheNodes * w.cacheHours;
+      const apiGateway    = r.apiGatewayCallsPer1M * w.apiGatewayCallsM;
+      const total         = kubernetes + sql + objectStorage + cdn + loadBalancer + egress + llm + serverless + cache + apiGateway;
+      return { kubernetes, sql, objectStorage, cdn, loadBalancer, egress, llm, serverless, cache, apiGateway, total };
     }
     function calcSelfHosted() {
       const g = state.gpu;
@@ -424,20 +529,21 @@
     }
 
     // ── Persistence (localStorage) ────────────────────────────────────────────
-    const STORAGE_KEY   = 'esk-cloudcalc-v1';
+    const STORAGE_KEY   = 'esk-cloudcalc-v2';
+    const STORAGE_KEY_V1 = 'esk-cloudcalc-v1';
     const SCENARIOS_KEY = 'esk-cloudcalc-scenarios';
 
     function saveState() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
           workload: state.workload, rates: state.rates, gpu: state.gpu,
-          reserved: state.reserved, fx: state.fx
+          reserved: state.reserved, fx: state.fx, region: state.region, spot: state.spot
         }));
       } catch(_) {}
     }
     function loadState() {
       try {
-        const saved = localStorage.getItem(STORAGE_KEY);
+        const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY_V1);
         if (!saved) return;
         const p = JSON.parse(saved);
         if (p.workload) Object.assign(state.workload, p.workload);
@@ -447,14 +553,16 @@
           if (p.reserved.discount1yr) Object.assign(state.reserved.discount1yr, p.reserved.discount1yr);
           if (p.reserved.discount3yr) Object.assign(state.reserved.discount3yr, p.reserved.discount3yr);
         }
-        if (p.fx != null) state.fx = p.fx;
+        if (p.spot)   Object.assign(state.spot, p.spot);
+        if (p.fx != null)     state.fx = p.fx;
+        if (p.region)         state.region = p.region;
       } catch(_) {}
     }
 
     // ── URL Sharing ───────────────────────────────────────────────────────────
     function encodeStateToURL() {
       try {
-        const snapshot = { workload: state.workload, rates: state.rates, gpu: state.gpu, reserved: state.reserved, fx: state.fx };
+        const snapshot = { workload: state.workload, rates: state.rates, gpu: state.gpu, reserved: state.reserved, fx: state.fx, region: state.region, spot: state.spot };
         const encoded  = btoa(unescape(encodeURIComponent(JSON.stringify(snapshot))));
         const url = new URL(location.href);
         url.searchParams.set('s', encoded);
@@ -473,7 +581,9 @@
           if (p.reserved.discount1yr) Object.assign(state.reserved.discount1yr, p.reserved.discount1yr);
           if (p.reserved.discount3yr) Object.assign(state.reserved.discount3yr, p.reserved.discount3yr);
         }
-        if (p.fx != null) state.fx = p.fx;
+        if (p.spot)   Object.assign(state.spot, p.spot);
+        if (p.fx != null)   state.fx = p.fx;
+        if (p.region)       state.region = p.region;
         return true;
       } catch(_) { return false; }
     }
@@ -495,7 +605,9 @@
         rates:    JSON.parse(JSON.stringify(state.rates)),
         gpu:      JSON.parse(JSON.stringify(state.gpu)),
         reserved: JSON.parse(JSON.stringify(state.reserved)),
-        fx: state.fx
+        spot:     JSON.parse(JSON.stringify(state.spot)),
+        fx: state.fx,
+        region: state.region
       });
       persistScenarios(list);
       renderScenarios();
@@ -511,7 +623,9 @@
         if (s.reserved.discount1yr) Object.assign(state.reserved.discount1yr, s.reserved.discount1yr);
         if (s.reserved.discount3yr) Object.assign(state.reserved.discount3yr, s.reserved.discount3yr);
       }
+      if (s.spot)   Object.assign(state.spot, s.spot);
       if (s.fx != null) { state.fx = s.fx; document.getElementById('fxRate').value = s.fx; document.getElementById('fxLabel').textContent = fxSymbol(); }
+      if (s.region) { state.region = s.region; document.getElementById('regionSelect').value = s.region; }
       saveState();
       renderInputs();
       renderReservedInputs();
@@ -533,16 +647,18 @@
         el.innerHTML = '<p style="font-size:var(--text-xs);color:var(--color-text-faint)">Nenhum cenário salvo.</p>';
         return;
       }
-      el.innerHTML = list.map((s, i) => `
+      el.innerHTML = list.map((s, i) => {
+        const safeName = s.name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        return `
         <div class="scenario-item">
-          <span class="scenario-name" title="${s.name}">${s.name}</span>
+          <span class="scenario-name" title="${safeName}">${safeName}</span>
           <button class="btn-secondary" onclick="loadScenario(${i})" title="Carregar cenário">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M13 6l6 6-6 6"/></svg>
           </button>
           <button class="btn-secondary btn-danger" onclick="deleteScenario(${i})" title="Excluir cenário">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
           </button>
-        </div>`).join('');
+        </div>`}).join('');
     }
 
     // ── Toast ─────────────────────────────────────────────────────────────────
@@ -569,6 +685,9 @@
         ['Load Balancer',           fmt(aws.loadBalancer),  fmt(gcp.loadBalancer),  fmt(azure.loadBalancer)],
         ['Egress',                  fmt(aws.egress),        fmt(gcp.egress),        fmt(azure.egress)],
         ['Inferência de LLM',       fmt(aws.llm),           fmt(gcp.llm),           fmt(azure.llm)],
+        ['Serverless',              fmt(aws.serverless),    fmt(gcp.serverless),    fmt(azure.serverless)],
+        ['Cache gerenciado',        fmt(aws.cache),         fmt(gcp.cache),         fmt(azure.cache)],
+        ['API Gateway',             fmt(aws.apiGateway),    fmt(gcp.apiGateway),    fmt(azure.apiGateway)],
         ['Total on-demand',         fmt(aws.total),         fmt(gcp.total),         fmt(azure.total)],
         [],
         [`Reservado 1 ano (${sym})`, `AWS (${sym})`, `Google Cloud (${sym})`, `Azure (${sym})`],
@@ -589,7 +708,17 @@
         ['Economia em 3 anos',
           fmt(aws.total * state.reserved.discount3yr.aws * 36),
           fmt(gcp.total * state.reserved.discount3yr.gcp * 36),
-          fmt(azure.total * state.reserved.discount3yr.azure * 36)]
+          fmt(azure.total * state.reserved.discount3yr.azure * 36)],
+        [],
+        [`Spot / Preemptible (${sym})`, `AWS (${sym})`, `Google Cloud (${sym})`, `Azure (${sym})`],
+        ['Custo spot / mês',
+          fmt(aws.total * (1 - state.spot.discountAws)),
+          fmt(gcp.total * (1 - state.spot.discountGcp)),
+          fmt(azure.total * (1 - state.spot.discountAzure))],
+        ['Economia mensal (spot)',
+          fmt(aws.total * state.spot.discountAws),
+          fmt(gcp.total * state.spot.discountGcp),
+          fmt(azure.total * state.spot.discountAzure)]
       ];
       const csv  = rows.map(r => r.map(c => `"${c ?? ''}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -605,7 +734,7 @@
       const s = getComputedStyle(document.documentElement);
       return {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: s.getPropertyValue('--color-text').trim(), font: { family: 'Satoshi' } } } },
+        plugins: { legend: { labels: { color: s.getPropertyValue('--color-text').trim(), font: { family: 'system-ui' } } } },
         scales: {
           x: { ticks: { color: s.getPropertyValue('--color-text-muted').trim() }, grid: { color: s.getPropertyValue('--color-divider').trim() }, ...extra.x },
           y: { ticks: { color: s.getPropertyValue('--color-text-muted').trim() }, grid: { color: s.getPropertyValue('--color-divider').trim() }, ...extra.y }
@@ -665,6 +794,9 @@
         ['Load Balancer',            'loadBalancer'],
         ['Egress',                   'egress'],
         ['Inferência de LLM',        'llm'],
+        ['Serverless',               'serverless'],
+        ['Cache gerenciado',         'cache'],
+        ['API Gateway',              'apiGateway'],
         ['Total',                    'total']
       ];
       document.getElementById('breakdownBody').innerHTML = breakdownRows.map(([label, key]) =>
@@ -688,7 +820,10 @@
         { label: 'CDN',           key: 'cdn',           color: '#a12c7b' },
         { label: 'Load Balancer', key: 'loadBalancer',  color: '#437a22' },
         { label: 'Egress',        key: 'egress',        color: '#5591c7' },
-        { label: 'LLM',           key: 'llm',           color: '#da7101' }
+        { label: 'LLM',           key: 'llm',           color: '#da7101' },
+        { label: 'Serverless',    key: 'serverless',    color: '#01696f' },
+        { label: 'Cache',         key: 'cache',         color: '#437a22' },
+        { label: 'API Gateway',   key: 'apiGateway',    color: '#a12c7b' }
       ];
       mixChart?.destroy();
       mixChart = new Chart(document.getElementById('mixChart'), {
@@ -787,7 +922,75 @@
       });
     }
 
-    function refresh() { renderOverview(); renderReserved(); renderBreakEven(); }
+    function refresh() { renderOverview(); renderReserved(); renderSpot(); renderBreakEven(); renderComparison(); }
+
+    // ── Render: Comparison ───────────────────────────────────────────────────
+    function renderComparison() {
+      const selectA = document.getElementById('compareSelA');
+      const selectB = document.getElementById('compareSelB');
+      if (!selectA || !selectB) return;
+      const scenarios = getScenarios();
+      const buildOptions = sel => {
+        const cur = sel.value;
+        sel.innerHTML = '<option value="__current__">Atual</option>' +
+          scenarios.map((s, i) => `<option value="${i}"${String(i) === cur ? ' selected' : ''}>${s.name}</option>`).join('');
+        if (!sel.value) sel.value = '__current__';
+      };
+      buildOptions(selectA); buildOptions(selectB);
+
+      const getSnap = val => {
+        if (val === '__current__') return { aws: calcProvider('aws'), gcp: calcProvider('gcp'), azure: calcProvider('azure') };
+        const s = scenarios[Number(val)];
+        if (!s) return null;
+        const saved = JSON.parse(JSON.stringify(state));
+        Object.assign(state.workload, s.workload);
+        ['aws','gcp','azure'].forEach(k => { if (s.rates[k]) Object.assign(state.rates[k], s.rates[k]); });
+        if (s.region) state.region = s.region;
+        const snap = { aws: calcProvider('aws'), gcp: calcProvider('gcp'), azure: calcProvider('azure') };
+        Object.assign(state, saved);
+        return snap;
+      };
+
+      const a = getSnap(selectA.value), b = getSnap(selectB.value);
+      if (!a || !b) return;
+
+      const components = [
+        ['Kubernetes','kubernetes'],['SQL gerenciado','sql'],['Object Storage','objectStorage'],
+        ['CDN','cdn'],['Load Balancer','loadBalancer'],['Egress','egress'],
+        ['LLM','llm'],['Serverless','serverless'],['Cache','cache'],['API Gateway','apiGateway'],['Total','total']
+      ];
+      const tbody = document.getElementById('comparisonBody');
+      if (!tbody) return;
+      tbody.innerHTML = components.map(([label, key]) => {
+        const aVal = a.aws[key] + a.gcp[key] + a.azure[key];
+        const bVal = b.aws[key] + b.gcp[key] + b.azure[key];
+        const delta = aVal > 0 ? ((bVal - aVal) / aVal * 100) : 0;
+        const color = delta > 0 ? 'var(--color-error)' : delta < 0 ? 'var(--color-success)' : '';
+        const cls = key === 'total' ? ' class="total-row"' : '';
+        return `<tr${cls}>
+          <td>${label}</td>
+          <td class="money">${currency(a.aws[key])}</td><td class="money">${currency(a.gcp[key])}</td><td class="money">${currency(a.azure[key])}</td>
+          <td class="money">${currency(b.aws[key])}</td><td class="money">${currency(b.gcp[key])}</td><td class="money">${currency(b.azure[key])}</td>
+          <td class="num" style="color:${color};font-weight:600">${delta > 0 ? '+' : ''}${delta.toFixed(1)}%</td>
+        </tr>`;
+      }).join('');
+
+      const providers = ['aws','gcp','azure'];
+      const labelA = selectA.options[selectA.selectedIndex]?.text || 'A';
+      const labelB = selectB.options[selectB.selectedIndex]?.text || 'B';
+      comparisonChart?.destroy();
+      comparisonChart = new Chart(document.getElementById('comparisonChart'), {
+        type: 'bar',
+        data: {
+          labels: providers.map(p => providerMeta[p].label),
+          datasets: [
+            { label: labelA, data: providers.map(p => +(a[p].total * fxRate()).toFixed(0)), backgroundColor: providers.map(p => providerMeta[p].color + '99'), borderRadius: 8 },
+            { label: labelB, data: providers.map(p => +(b[p].total * fxRate()).toFixed(0)), backgroundColor: providers.map(p => providerMeta[p].color), borderRadius: 8 }
+          ]
+        },
+        options: chartOptions()
+      });
+    }
 
     // ── Event listeners ───────────────────────────────────────────────────────
     document.body.addEventListener('input', e => {
@@ -802,6 +1005,8 @@
       else if (el.dataset.scope === 'reserved') {
         const bucket = el.dataset.term === '1yr' ? 'discount1yr' : 'discount3yr';
         state.reserved[bucket][el.dataset.provider] = raw;
+      } else if (el.dataset.scope === 'spot') {
+        state.spot[el.dataset.key] = raw;
       } else if (el.id === 'fxRate') {
         state.fx = raw > 0 ? raw : 1;
         document.getElementById('fxLabel').textContent = fxSymbol();
@@ -828,6 +1033,28 @@
         .catch(() => prompt('Copie o link:', url));
     });
     document.getElementById('exportCsvBtn').addEventListener('click', exportCSV);
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+    document.getElementById('regionSelect').addEventListener('change', e => {
+      state.region = e.target.value;
+      saveState();
+      refresh();
+    });
+
+    document.body.addEventListener('click', e => {
+      const btn = e.target.closest('[data-chart-png]');
+      if (!btn) return;
+      const chartId = btn.dataset.chartPng;
+      const chartMap = { totalChart, mixChart, breakevenChart, reserved1yrChart, reserved3yrChart, comparisonChart };
+      const chart = chartMap[chartId];
+      if (!chart) return;
+      const a = document.createElement('a');
+      a.download = `${chartId}-${new Date().toISOString().slice(0,10)}.png`;
+      a.href = chart.toBase64Image();
+      a.click();
+    });
+
+    document.getElementById('compareSelA')?.addEventListener('change', renderComparison);
+    document.getElementById('compareSelB')?.addEventListener('change', renderComparison);
 
     (function () {
       const toggle = document.querySelector('[data-theme-toggle]');
@@ -856,7 +1083,14 @@
     renderInputs();
     renderReservedInputs();
     renderScenarios();
+    if (state.region) document.getElementById('regionSelect').value = state.region;
     refresh();
+    // ── Service Worker (PWA offline) ──
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('assets/sw.js').catch(() => {});
+    }
+    // Para habilitar analytics: descomente a linha abaixo após criar conta em plausible.io
+    // const script = document.createElement('script'); script.defer = true; script.setAttribute('data-domain','seskelsen.github.io/esk-cloudcalc'); script.src = 'https://plausible.io/js/script.js'; document.head.appendChild(script);
   </script>
 </body>
 </html>
