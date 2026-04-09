@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Custos em Nuvem — AWS, Google Cloud e Azure</title>
+  <meta name="description" content="Compare gratuitamente os custos mensais de AWS, Google Cloud e Azure: Kubernetes, SQL gerenciado, armazenamento de objetos, CDN e inferência de LLM. Ferramenta 100% no navegador, sem cadastro.">
+  <meta name="keywords" content="calculadora de custos nuvem, AWS vs GCP vs Azure, custo Kubernetes, custo LLM, cloud cost calculator, comparativo cloud brasil">
+  <meta name="author" content="esk-cloudcalc">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Calculadora de Custos em Nuvem — AWS, Google Cloud e Azure">
+  <meta property="og:description" content="Compare custos mensais de AWS, Google Cloud e Azure: Kubernetes, SQL, CDN e inferência de LLM. Modelo editável, 100% no navegador.">
+  <meta property="og:image" content="assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Calculadora de Custos em Nuvem">
+  <meta name="twitter:description" content="Compare AWS, Google Cloud e Azure gratuitamente. Modelo editável de custos mensais com análise de break-even de GPU.">
+  <meta name="robots" content="index, follow">
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <script src="assets/chart.min.js"></script>
+  <style>
+    :root, [data-theme="light"] {
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+      --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
+      --space-12: 3rem; --space-16: 4rem;
+      --color-bg: #f7f6f2; --color-surface: #f9f8f5; --color-surface-2: #fbfbf9;
+      --color-surface-offset: #f3f0ec; --color-border: #d4d1ca; --color-divider: #dcd9d5;
+      --color-text: #28251d; --color-text-muted: #66645f; --color-text-faint: #9d9b96;
+      --color-text-inverse: #f9f8f4; --color-primary: #01696f; --color-primary-hover: #0c4e54;
+      --color-success: #437a22; --color-error: #a12c7b; --color-blue: #006494;
+      --color-orange: #da7101; --color-purple: #7a39bb; --color-gold: #d19900;
+      --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem;
+      --shadow-sm: 0 1px 2px oklch(0.2 0.01 80 / 0.06); --shadow-md: 0 4px 12px oklch(0.2 0.01 80 / 0.08);
+      --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      --font-body: 'Satoshi', 'Inter', sans-serif;
+      --font-display: 'Satoshi', 'Inter', sans-serif;
+    }
+    [data-theme="dark"] {
+      --color-bg: #171614; --color-surface: #1c1b19; --color-surface-2: #201f1d;
+      --color-surface-offset: #1d1c1a; --color-border: #393836; --color-divider: #262523;
+      --color-text: #cdccca; --color-text-muted: #a4a39f; --color-text-faint: #6e6d6b;
+      --color-text-inverse: #2b2a28; --color-primary: #4f98a3; --color-primary-hover: #227f8b;
+      --color-success: #6daa45; --color-error: #d163a7; --color-blue: #5591c7;
+      --color-orange: #fdab43; --color-purple: #a86fdf; --color-gold: #e8af34;
+      --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.2); --shadow-md: 0 4px 12px oklch(0 0 0 / 0.3);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+    body {
+      min-height: 100dvh; line-height: 1.6; font-family: var(--font-body); font-size: var(--text-base);
+      color: var(--color-text); background: var(--color-bg); overflow: hidden;
+    }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; border: none; background: none; }
+    table { border-collapse: collapse; width: 100%; }
+    canvas { max-width: 100%; }
+    :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-sm); }
+    .dashboard { display: grid; grid-template-columns: 280px 1fr; grid-template-rows: auto 1fr; height: 100dvh; }
+    .sidebar { grid-row: 1 / -1; background: var(--color-surface); border-right: 1px solid var(--color-border); padding: var(--space-6); overflow-y: auto; overscroll-behavior: contain; }
+    .header { grid-column: 2; position: sticky; top: 0; z-index: 10; background: color-mix(in oklab, var(--color-bg) 88%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--space-6); }
+    .main { grid-column: 2; overflow-y: auto; overscroll-behavior: contain; padding: var(--space-6); }
+    .mobile-menu { display: none; }
+    .logo { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-8); }
+    .logo svg { width: 34px; height: 34px; color: var(--color-primary); }
+    .logo-text h1 { font-size: var(--text-lg); line-height: 1.1; }
+    .logo-text p { font-size: var(--text-xs); color: var(--color-text-muted); }
+    .nav-group { margin-bottom: var(--space-8); }
+    .nav-group h2 { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); margin-bottom: var(--space-3); }
+    .nav-list { list-style: none; display: grid; gap: var(--space-2); }
+    .nav-button { width: 100%; text-align: left; padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); font-size: var(--text-sm); background: transparent; transition: background var(--transition-interactive), color var(--transition-interactive); }
+    .nav-button.active, .nav-button:hover { background: color-mix(in oklab, var(--color-primary) 10%, var(--color-surface)); color: var(--color-primary); }
+    .theme-toggle, .mobile-menu { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-full); background: var(--color-surface); border: 1px solid var(--color-border); }
+    .header-title h2 { font-size: var(--text-xl); line-height: 1.1; }
+    .header-title p { font-size: var(--text-sm); color: var(--color-text-muted); }
+    .content-section { display: none; }
+    .content-section.active { display: block; }
+    .section-grid { display: grid; gap: var(--space-6); }
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); }
+    .card-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+    .card { background: var(--color-surface); border: 1px solid color-mix(in oklab, var(--color-text) 10%, transparent); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); padding: var(--space-5); content-visibility: auto; contain-intrinsic-size: 0 220px; }
+    .card h3 { font-size: var(--text-lg); margin-bottom: var(--space-2); }
+    .card p.meta { font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-4); }
+    .kpi-value { font-size: var(--text-xl); font-weight: 700; font-variant-numeric: tabular-nums lining-nums; }
+    .kpi-label { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); }
+    .inputs-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+    .field { display: grid; gap: var(--space-2); }
+    .field label { font-size: var(--text-sm); font-weight: 500; }
+    .field input, .field select { min-height: 44px; border: 1px solid var(--color-border); background: var(--color-surface-2); border-radius: var(--radius-md); padding: 0 var(--space-3); }
+    .stack-grid { display: grid; gap: var(--space-3); }
+    .stack-row { display: grid; grid-template-columns: 1.2fr 0.9fr 0.9fr 0.9fr 0.9fr; gap: var(--space-3); align-items: center; padding: var(--space-3); border-radius: var(--radius-lg); background: var(--color-surface-2); font-size: var(--text-sm); }
+    .stack-row.header-row { background: transparent; padding-inline: 0; color: var(--color-text-muted); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; }
+    .provider-pill { display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-1) var(--space-2); border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 700; }
+    .aws { background: color-mix(in oklab, var(--color-orange) 15%, var(--color-surface)); color: var(--color-orange); }
+    .gcp { background: color-mix(in oklab, var(--color-blue) 15%, var(--color-surface)); color: var(--color-blue); }
+    .azure { background: color-mix(in oklab, var(--color-purple) 15%, var(--color-surface)); color: var(--color-purple); }
+    .bedrock { background: color-mix(in oklab, var(--color-orange) 15%, var(--color-surface)); color: var(--color-orange); }
+    .vertex { background: color-mix(in oklab, var(--color-blue) 15%, var(--color-surface)); color: var(--color-blue); }
+    .aoai { background: color-mix(in oklab, var(--color-purple) 15%, var(--color-surface)); color: var(--color-purple); }
+    .selfhost { background: color-mix(in oklab, var(--color-success) 15%, var(--color-surface)); color: var(--color-success); }
+    .table-wrap { overflow-x: auto; }
+    .cost-table th, .cost-table td { text-align: left; padding: var(--space-3); border-bottom: 1px solid var(--color-divider); font-size: var(--text-sm); }
+    .cost-table th { position: sticky; top: 0; background: var(--color-surface); z-index: 1; color: var(--color-text-muted); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; }
+    .cost-table td.money, .cost-table td.num { font-variant-numeric: tabular-nums lining-nums; }
+    .chart-shell { min-height: 320px; position: relative; }
+    .note { padding: var(--space-4); border-radius: var(--radius-lg); background: color-mix(in oklab, var(--color-primary) 7%, var(--color-surface)); color: var(--color-text); font-size: var(--text-sm); }
+    .toolbar { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+    @media (max-width: 1100px) { .kpi-grid, .card-grid-2, .inputs-grid { grid-template-columns: 1fr; } .stack-row { grid-template-columns: 1.2fr repeat(4, minmax(90px, 1fr)); } }
+    @media (max-width: 860px) { body { overflow: auto; } .dashboard { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; height: auto; min-height: 100dvh; } .sidebar { grid-row: auto; grid-column: 1; border-right: none; border-bottom: 1px solid var(--color-border); display: none; } .sidebar.open { display: block; } .header, .main { grid-column: 1; } .header { position: sticky; top: 0; } .main { overflow: visible; padding: var(--space-4); } .mobile-menu { display: inline-flex; } .header-title h2 { font-size: var(--text-lg); } .stack-row { min-width: 720px; } }
+  </style>
+</head>
+<body>
+  <a href="#main" style="position:absolute;left:-9999px;top:auto;">Pular para o conteúdo</a>
+  <div class="dashboard">
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">
+        <svg viewBox="0 0 48 48" fill="none" aria-label="Logotipo do painel de custos em nuvem">
+          <rect x="6" y="10" width="14" height="28" rx="5" stroke="currentColor" stroke-width="3"></rect>
+          <rect x="24" y="6" width="18" height="10" rx="5" fill="currentColor"></rect>
+          <rect x="24" y="19" width="18" height="10" rx="5" fill="currentColor" opacity="0.72"></rect>
+          <rect x="24" y="32" width="18" height="10" rx="5" fill="currentColor" opacity="0.4"></rect>
+        </svg>
+        <div class="logo-text">
+          <h1>Custos em Nuvem</h1>
+          <p>Modelo editável de carga</p>
+        </div>
+      </div>
+      <nav aria-label="Principal">
+        <div class="nav-group">
+          <h2>Visões</h2>
+          <ul class="nav-list">
+            <li><button class="nav-button active" data-target="overview">Visão geral</button></li>
+            <li><button class="nav-button" data-target="inputs">Entradas</button></li>
+            <li><button class="nav-button" data-target="break-even">Ponto de equilíbrio</button></li>
+            <li><button class="nav-button" data-target="assumptions">Premissas</button></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="nav-group">
+        <h2>Provedores</h2>
+        <div class="stack-grid">
+          <div><span class="provider-pill aws">AWS</span></div>
+          <div><span class="provider-pill gcp">Google Cloud</span></div>
+          <div><span class="provider-pill azure">Azure</span></div>
+        </div>
+      </div>
+      <div class="note">O painel usa tabelas de preços editáveis e premissas padrão para Kubernetes, SQL gerenciado, armazenamento de objetos, CDN e inferência de LLM. Use-o para modelar custos mensais de forma direcional e depois substitua os valores pelos preços negociados no seu contrato.</div>
+      <div class="note" style="margin-top: var(--space-4); font-size: var(--text-xs); color: var(--color-text-muted);">
+        <strong>Preços de referência:</strong> abril de 2025.<br>
+        Valores são estimativas direcionais. Não refletem preços contratados, descontos por volume ou variações regionais. Consulte as calculadoras oficiais dos provedores para orçamentos precisos.
+      </div>
+    </aside>
+    <header class="header">
+      <div class="toolbar">
+        <button class="mobile-menu" id="mobileMenu" aria-label="Alternar navegação">☰</button>
+        <div class="header-title">
+          <h2>Comparativo mensal de carga</h2>
+          <p>Stack padrão entre AWS, Google Cloud e Azure</p>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Alternar tema">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+    </header>
+    <main class="main" id="main">
+      <div role="note" style="display:flex;align-items:flex-start;gap:var(--space-3);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);border-radius:var(--radius-lg);background:color-mix(in oklab,var(--color-gold) 10%,var(--color-surface));border:1px solid color-mix(in oklab,var(--color-gold) 25%,transparent);font-size:var(--text-xs);color:var(--color-text-muted);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;color:var(--color-gold)"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <span><strong style="color:var(--color-text)">Estimativas direcionais.</strong> Os valores refletem preços de tabela de abril de 2025. Não incluem descontos por volume, preços negociados ou variações regionais. Use como ponto de partida e consulte as calculadoras oficiais dos provedores para orçamentos precisos.</span>
+      </div>
+      <section class="content-section active" id="overview">
+        <div class="section-grid">
+          <div class="kpi-grid">
+            <article class="card"><div class="kpi-label">Menor total mensal</div><div class="kpi-value" id="kpiLowest">US$ 0</div><p class="meta" id="kpiLowestLabel">Provedor</p></article>
+            <article class="card"><div class="kpi-label">Maior total mensal</div><div class="kpi-value" id="kpiHighest">US$ 0</div><p class="meta" id="kpiHighestLabel">Provedor</p></article>
+            <article class="card"><div class="kpi-label">Diferença</div><div class="kpi-value" id="kpiSpread">US$ 0</div><p class="meta">Diferença entre o menor e o maior</p></article>
+            <article class="card"><div class="kpi-label">Peso da inferência</div><div class="kpi-value" id="kpiInferenceShare">0%</div><p class="meta">Maior peso de IA dentro do total em nuvem</p></article>
+          </div>
+          <div class="card-grid-2">
+            <article class="card"><h3>Totais por provedor</h3><p class="meta">Total do stack para a carga mensal editável.</p><div class="chart-shell"><canvas id="totalChart"></canvas></div></article>
+            <article class="card"><h3>Composição de custos</h3><p class="meta">Composição por componente em cada nuvem.</p><div class="chart-shell"><canvas id="mixChart"></canvas></div></article>
+          </div>
+          <article class="card table-wrap">
+            <h3>Detalhamento mensal do stack</h3>
+            <p class="meta">Todos os valores podem ser alterados na visão Entradas.</p>
+            <table class="cost-table" aria-label="Comparação de custos mensais da carga">
+              <thead><tr><th>Componente</th><th>AWS</th><th>Google Cloud</th><th>Azure</th></tr></thead>
+              <tbody id="breakdownBody"></tbody>
+            </table>
+          </article>
+        </div>
+      </section>
+      <section class="content-section" id="inputs">
+        <div class="section-grid">
+          <article class="card"><h3>Entradas da carga</h3><p class="meta">Ajuste as premissas de uso do stack padrão.</p><div class="inputs-grid" id="workloadInputs"></div></article>
+          <article class="card"><h3>Tabela de preços por provedor</h3><p class="meta">As tabelas de preços padrão são estimativas direcionais. Substitua pelos valores dos calculadores ou pelos preços contratados.</p><div class="stack-grid" id="rateCardTables"></div></article>
+        </div>
+      </section>
+      <section class="content-section" id="break-even">
+        <div class="section-grid">
+          <div class="card-grid-2">
+            <article class="card"><h3>Economia de GPU</h3><p class="meta">Compare o custo mensal de GPU self-hosted com APIs de inferência gerenciadas.</p><div class="inputs-grid" id="gpuInputs"></div></article>
+            <article class="card"><h3>Requisições de equilíbrio</h3><p class="meta">Quantidade mensal de requisições para o self-hosted empatar com cada provedor gerenciado.</p><div class="chart-shell"><canvas id="breakevenChart"></canvas></div></article>
+          </div>
+          <article class="card table-wrap">
+            <h3>Tabela econômica de inferência</h3>
+            <p class="meta">Assume média de tokens por requisição e preço médio de inferência gerenciada.</p>
+            <table class="cost-table" aria-label="Tabela comparativa de ponto de equilíbrio">
+              <thead><tr><th>Opção de inferência</th><th>Fixo mensal / base</th><th>Variável por requisição</th><th>Requisições mensais de equilíbrio</th><th>Custo mensal na carga atual</th></tr></thead>
+              <tbody id="breakevenBody"></tbody>
+            </table>
+          </article>
+        </div>
+      </section>
+      <section class="content-section" id="assumptions">
+        <div class="section-grid">
+          <article class="card"><h3>Notas do modelo</h3><p class="meta">Como o painel calcula os totais.</p><div class="stack-grid"><div class="note">Kubernetes é modelado como plano de controle mais horas de nó multiplicadas pela quantidade de workers. SQL gerenciado inclui computação, armazenamento, backup e uma pequena folga de IOPS.</div><div class="note">Armazenamento de objetos inclui GB armazenado e franquia de recuperação/API. CDN é modelada principalmente por GB de saída e volume de requisições. A inferência gerenciada é baseada em volume de tokens com taxas separadas para entrada e saída.</div><div class="note">O custo de GPU self-hosted inclui amortização mensal, energia, colocation ou rack e overhead de plataforma. Use isso para análise de ponto de equilíbrio, não como contabilidade completa de infraestrutura.</div></div></article>
+          <article class="card"><h3>Referência de fórmulas</h3><p class="meta">Cálculos principais usados no painel.</p><div class="stack-grid"><div class="stack-row header-row"><div>Métrica</div><div>Fórmula</div><div>Exemplo</div><div>Unidades</div><div>Observações</div></div><div class="stack-row"><div>Kubernetes</div><div>plano de controle + horas de nó × workers</div><div>74 + 0,12 × 730 × 3</div><div>USD/mês</div><div>Inclui taxa do cluster</div></div><div class="stack-row"><div>SQL gerenciado</div><div>base + vCPU × horas + armazenamento × GB</div><div>55 + 0,18 × 730 × 2 + 0,12 × 200</div><div>USD/mês</div><div>Padrão de serviço gerenciado</div></div><div class="stack-row"><div>CDN</div><div>GB de saída × tarifa + requisições ÷ 10 mil × tarifa por requisição</div><div>3000 × 0,08 + 20m ÷ 10 mil × 0,0075</div><div>USD/mês</div><div>Cobrança em duas partes</div></div><div class="stack-row"><div>Inferência de LLM</div><div>Mtok de entrada × tarifa + Mtok de saída × tarifa</div><div>250 × 0,8 + 60 × 3,2</div><div>USD/mês</div><div>Preço separado por token</div></div><div class="stack-row"><div>Equilíbrio de GPU</div><div>custo self-hosted ÷ custo variável gerenciado</div><div>4200 ÷ 0,022</div><div>req/mês</div><div>Limite aproximado</div></div></div></article>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const state = {
+      workload: { k8sWorkers: 3, clusterHours: 730, sqlVcpu: 2, sqlStorageGb: 200, objectStorageGb: 5000, objectRetrievalGb: 600, cdnEgressGb: 3000, cdnRequests10k: 2000, llmRequests: 400000, avgInputTokens: 625, avgOutputTokens: 150 },
+      rates: {
+        aws: { kubernetesControlPlane: 74, kubernetesNodeHour: 0.122, sqlBase: 55, sqlVcpuHour: 0.18, sqlStorageGb: 0.12, objectStorageGb: 0.023, objectRetrievalGb: 0.01, cdnEgressGb: 0.085, cdnRequest10k: 0.0075, llmInputPerM: 0.8, llmOutputPerM: 3.2 },
+        gcp: { kubernetesControlPlane: 74, kubernetesNodeHour: 0.114, sqlBase: 52, sqlVcpuHour: 0.17, sqlStorageGb: 0.11, objectStorageGb: 0.02, objectRetrievalGb: 0.012, cdnEgressGb: 0.08, cdnRequest10k: 0.008, llmInputPerM: 0.75, llmOutputPerM: 3.0 },
+        azure: { kubernetesControlPlane: 73, kubernetesNodeHour: 0.126, sqlBase: 58, sqlVcpuHour: 0.185, sqlStorageGb: 0.125, objectStorageGb: 0.021, objectRetrievalGb: 0.011, cdnEgressGb: 0.087, cdnRequest10k: 0.009, llmInputPerM: 0.85, llmOutputPerM: 3.4 }
+      },
+      gpu: { serverMonthly: 2600, powerCoolingMonthly: 450, rackOpsMonthly: 650, platformMonthly: 500, requestsPerHourCapacity: 1400, targetUtilization: 0.7 }
+    };
+    const providerMeta = { aws: { label: 'AWS', color: '#da7101' }, gcp: { label: 'Google Cloud', color: '#006494' }, azure: { label: 'Azure', color: '#7a39bb' }, self: { label: 'GPU self-hosted', color: '#437a22' }, bedrock: { label: 'Amazon Bedrock', color: '#da7101' }, vertex: { label: 'Vertex AI', color: '#006494' }, aoai: { label: 'Azure OpenAI', color: '#7a39bb' } };
+    const fieldDefs = [['k8sWorkers','Nós worker de Kubernetes',1],['clusterHours','Horas do cluster por mês',1],['sqlVcpu','vCPU de SQL gerenciado',1],['sqlStorageGb','Armazenamento de SQL gerenciado (GB)',1],['objectStorageGb','Armazenamento de objetos (GB)',1],['objectRetrievalGb','Recuperação de objetos (GB)',1],['cdnEgressGb','Saída de CDN (GB)',1],['cdnRequests10k','Requisições de CDN (x10 mil)',1],['llmRequests','Requisições de LLM por mês',1],['avgInputTokens','Média de tokens de entrada por requisição',1],['avgOutputTokens','Média de tokens de saída por requisição',1]];
+    const gpuDefs = [['serverMonthly','Amortização / locação do servidor GPU',1],['powerCoolingMonthly','Energia e refrigeração',1],['rackOpsMonthly','Rack / colocation / operação',1],['platformMonthly','Overhead de plataforma e SRE',1],['requestsPerHourCapacity','Requisições sustentadas por hora',1],['targetUtilization','Utilização alvo (0-1)',0.01]];
+    let totalChart, mixChart, breakevenChart;
+    const currency = v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
+    const currencyPrecise = v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'USD', minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(v);
+    const number = v => new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 }).format(v);
+    const percent = v => `${(v * 100).toFixed(1).replace('.', ',')}%`;
+    function calcProvider(provider) {
+      const w = state.workload, r = state.rates[provider];
+      const inputMTok = (w.llmRequests * w.avgInputTokens) / 1000000;
+      const outputMTok = (w.llmRequests * w.avgOutputTokens) / 1000000;
+      const kubernetes = r.kubernetesControlPlane + (r.kubernetesNodeHour * w.clusterHours * w.k8sWorkers);
+      const sql = r.sqlBase + (r.sqlVcpuHour * w.clusterHours * w.sqlVcpu) + (r.sqlStorageGb * w.sqlStorageGb);
+      const objectStorage = (r.objectStorageGb * w.objectStorageGb) + (r.objectRetrievalGb * w.objectRetrievalGb);
+      const cdn = (r.cdnEgressGb * w.cdnEgressGb) + (r.cdnRequest10k * w.cdnRequests10k);
+      const llm = (r.llmInputPerM * inputMTok) + (r.llmOutputPerM * outputMTok);
+      const total = kubernetes + sql + objectStorage + cdn + llm;
+      return { kubernetes, sql, objectStorage, cdn, llm, total };
+    }
+    function calcSelfHosted() {
+      const g = state.gpu;
+      const fixedMonthly = g.serverMonthly + g.powerCoolingMonthly + g.rackOpsMonthly + g.platformMonthly;
+      const practicalMonthlyCapacity = g.requestsPerHourCapacity * 24 * 30.4 * g.targetUtilization;
+      const variablePerRequest = practicalMonthlyCapacity > 0 ? fixedMonthly / practicalMonthlyCapacity : 0;
+      return { fixedMonthly, practicalMonthlyCapacity, variablePerRequest, currentLoadCost: fixedMonthly };
+    }
+    function calcBreakeven() {
+      const aws = calcProvider('aws'), gcp = calcProvider('gcp'), azure = calcProvider('azure'), self = calcSelfHosted();
+      const managed = { bedrock: aws.llm / state.workload.llmRequests, vertex: gcp.llm / state.workload.llmRequests, aoai: azure.llm / state.workload.llmRequests };
+      return Object.entries(managed).map(([key, perRequest]) => ({ key, variablePerRequest: perRequest, breakEvenRequests: perRequest > 0 ? self.fixedMonthly / perRequest : 0, currentMonthlyCost: perRequest * state.workload.llmRequests }));
+    }
+    function renderInputs() {
+      document.getElementById('workloadInputs').innerHTML = fieldDefs.map(([key,label,step]) => `<div class="field"><label for="${key}">${label}</label><input id="${key}" type="number" step="${step}" value="${state.workload[key]}" data-scope="workload" data-key="${key}" /></div>`).join('');
+      document.getElementById('gpuInputs').innerHTML = gpuDefs.map(([key,label,step]) => `<div class="field"><label for="gpu-${key}">${label}</label><input id="gpu-${key}" type="number" step="${step}" value="${state.gpu[key]}" data-scope="gpu" data-key="${key}" /></div>`).join('');
+      document.getElementById('rateCardTables').innerHTML = ['aws','gcp','azure'].map(provider => `<article class="card"><h3><span class="provider-pill ${provider === 'aws' ? 'aws' : provider === 'gcp' ? 'gcp' : 'azure'}">${providerMeta[provider].label}</span></h3><div class="inputs-grid">${Object.entries(state.rates[provider]).map(([key,value]) => `<div class="field"><label for="${provider}-${key}">${key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}</label><input id="${provider}-${key}" type="number" step="0.001" value="${value}" data-scope="rate" data-provider="${provider}" data-key="${key}" /></div>`).join('')}</div></article>`).join('');
+    }
+    function chartOptions() {
+      const styles = getComputedStyle(document.documentElement);
+      return { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: styles.getPropertyValue('--color-text').trim(), font: { family: 'Satoshi' } } } }, scales: { x: { ticks: { color: styles.getPropertyValue('--color-text-muted').trim() }, grid: { color: styles.getPropertyValue('--color-divider').trim() } }, y: { ticks: { color: styles.getPropertyValue('--color-text-muted').trim() }, grid: { color: styles.getPropertyValue('--color-divider').trim() } } } };
+    }
+    function renderOverview() {
+      const aws = calcProvider('aws'), gcp = calcProvider('gcp'), azure = calcProvider('azure');
+      const providers = [{ key:'aws', label:'AWS', ...aws }, { key:'gcp', label:'Google Cloud', ...gcp }, { key:'azure', label:'Azure', ...azure }];
+      const sorted = [...providers].sort((a,b) => a.total - b.total), lowest = sorted[0], highest = sorted[2], maxInference = Math.max(...providers.map(p => p.llm / p.total));
+      document.getElementById('kpiLowest').textContent = currency(lowest.total);
+      document.getElementById('kpiLowestLabel').textContent = lowest.label;
+      document.getElementById('kpiHighest').textContent = currency(highest.total);
+      document.getElementById('kpiHighestLabel').textContent = highest.label;
+      document.getElementById('kpiSpread').textContent = currency(highest.total - lowest.total);
+      document.getElementById('kpiInferenceShare').textContent = percent(maxInference);
+      document.getElementById('breakdownBody').innerHTML = [['Kubernetes','kubernetes'],['SQL gerenciado','sql'],['Armazenamento de objetos','objectStorage'],['CDN','cdn'],['Inferência de LLM','llm'],['Total','total']].map(([label,key]) => `<tr><td>${label}</td><td class="money">${currency(aws[key])}</td><td class="money">${currency(gcp[key])}</td><td class="money">${currency(azure[key])}</td></tr>`).join('');
+      totalChart?.destroy();
+      totalChart = new Chart(document.getElementById('totalChart'), { type:'bar', data:{ labels: providers.map(p => p.label), datasets:[{ label:'Total mensal', data: providers.map(p => Math.round(p.total)), backgroundColor: providers.map(p => providerMeta[p.key].color), borderRadius:10 }] }, options: chartOptions() });
+      mixChart?.destroy();
+      mixChart = new Chart(document.getElementById('mixChart'), { type:'bar', data:{ labels: providers.map(p => p.label), datasets:[{ label:'Kubernetes', data: providers.map(p => p.kubernetes), backgroundColor:'#01696f' },{ label:'SQL gerenciado', data: providers.map(p => p.sql), backgroundColor:'#006494' },{ label:'Armazenamento de objetos', data: providers.map(p => p.objectStorage), backgroundColor:'#d19900' },{ label:'CDN', data: providers.map(p => p.cdn), backgroundColor:'#a12c7b' },{ label:'Inferência de LLM', data: providers.map(p => p.llm), backgroundColor:'#da7101' }] }, options: chartOptions() });
+    }
+    function renderBreakEven() {
+      const self = calcSelfHosted(), rows = calcBreakeven();
+      document.getElementById('breakevenBody').innerHTML = `<tr><td><span class="provider-pill selfhost">GPU self-hosted</span></td><td class="money">${currency(self.fixedMonthly)}</td><td class="money">${currencyPrecise(self.variablePerRequest)}</td><td class="num">Capacidade ${number(self.practicalMonthlyCapacity)}</td><td class="money">${currency(self.currentLoadCost)}</td></tr>` + rows.map(row => `<tr><td><span class="provider-pill ${row.key === 'bedrock' ? 'bedrock' : row.key === 'vertex' ? 'vertex' : 'aoai'}">${row.key === 'bedrock' ? 'Amazon Bedrock' : row.key === 'vertex' ? 'Vertex AI' : 'Azure OpenAI'}</span></td><td class="money">${currency(row.currentMonthlyCost)}</td><td class="money">${currencyPrecise(row.variablePerRequest)}</td><td class="num">${number(row.breakEvenRequests)}</td><td class="money">${currency(row.currentMonthlyCost)}</td></tr>`).join('');
+      breakevenChart?.destroy();
+      breakevenChart = new Chart(document.getElementById('breakevenChart'), { type:'bar', data:{ labels:['Amazon Bedrock','Vertex AI','Azure OpenAI'], datasets:[{ label:'Requisições mensais de equilíbrio', data: rows.map(r => Math.round(r.breakEvenRequests)), backgroundColor:['#da7101','#006494','#7a39bb'], borderRadius:10 },{ label:'Capacidade mensal self-hosted', data: rows.map(() => Math.round(self.practicalMonthlyCapacity)), type:'line', borderColor:'#437a22', backgroundColor:'#437a22', tension:0.35 }] }, options: chartOptions() });
+    }
+    const STORAGE_KEY = 'esk-cloudcalc-v1';
+    function saveState() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ workload: state.workload, rates: state.rates, gpu: state.gpu })); } catch(_) {}
+    }
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
+        const parsed = JSON.parse(saved);
+        if (parsed.workload) Object.assign(state.workload, parsed.workload);
+        if (parsed.rates) { ['aws','gcp','azure'].forEach(p => { if (parsed.rates[p]) Object.assign(state.rates[p], parsed.rates[p]); }); }
+        if (parsed.gpu) Object.assign(state.gpu, parsed.gpu);
+      } catch(_) {}
+    }
+    function refresh() { renderOverview(); renderBreakEven(); }
+    document.body.addEventListener('input', e => {
+      const el = e.target;
+      if (!(el instanceof HTMLInputElement)) return;
+      const raw = Number(el.value); if (Number.isNaN(raw)) return;
+      if (el.dataset.scope === 'workload') state.workload[el.dataset.key] = raw;
+      if (el.dataset.scope === 'gpu') state.gpu[el.dataset.key] = raw;
+      if (el.dataset.scope === 'rate') state.rates[el.dataset.provider][el.dataset.key] = raw;
+      saveState();
+      refresh();
+    });
+    document.querySelectorAll('.nav-button').forEach(btn => btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+      document.querySelectorAll('.nav-button').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.content-section').forEach(sec => sec.classList.toggle('active', sec.id === target));
+      document.getElementById('sidebar').classList.remove('open');
+    }));
+    document.getElementById('mobileMenu').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
+    (function(){ const toggle = document.querySelector('[data-theme-toggle]'); const root = document.documentElement; let theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; root.setAttribute('data-theme', theme); const setIcon = () => { toggle.innerHTML = theme === 'dark' ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>'; }; setIcon(); toggle.addEventListener('click', () => { theme = theme === 'dark' ? 'light' : 'dark'; root.setAttribute('data-theme', theme); setIcon(); refresh(); }); })();
+    loadState(); renderInputs(); refresh();
+  </script>
+</body>
+</html>
